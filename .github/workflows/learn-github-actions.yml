@@ -21,5 +21,4 @@ jobs:
         with:
           node-version: '14'   
       - run: npm install -g aws-cdk
-      - run: cd ./Build
-      - run: cdk synth --require-approval never
+      - run: cd ./Build && cdk synth --require-approval never
