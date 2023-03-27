@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.CertificateManager;
 using Amazon.CDK.AWS.CloudFront;
