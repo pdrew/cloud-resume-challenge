@@ -1,0 +1,23 @@
+name: build-actions
+on: [push]
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  cdk-synth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::428421847827:role/GitHubActionsRole
+          role-session-name: GithubActions
+          aws-region: ap-southeast-2
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'   
+      - run: npm install -g aws-cdk
+      - run: cd ./Build && cdk synth --require-approval never
