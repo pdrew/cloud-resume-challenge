@@ -1,5 +1,5 @@
 name: build-actions
-run-name: Building and deploying.
+run-name: Build and deploy.
 on: [push]
 permissions:
   id-token: write
@@ -19,15 +19,15 @@ jobs:
           dotnet-version: '6.0.x'
       - uses: actions/setup-node@v3
         with:
-          node-version: '14'   
-      - run: npm install -g aws-cdk
+          node-version: '18.15.x'
       - name: Build FrontEnd
         working-directory: ./FrontEnd
         run: |
-          pwd
           npm ci
           npm run build
           touch out/.nojekyll
       - name: Deploy
         working-directory: ./Build
-        run: cdk deploy --require-approval never
+        run: | 
+          npm install -g aws-cdk
+          cdk deploy --require-approval never
