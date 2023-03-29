@@ -5,7 +5,7 @@ permissions:
   id-token: write
   contents: read
 jobs:
-  cdk-synth:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,4 +21,9 @@ jobs:
         with:
           node-version: '14'   
       - run: npm install -g aws-cdk
-      - run: cd ./Build && cdk synth --require-approval never
+      - working-directory: ./FrontEnd
+        run: npm ci
+      - working-directory: ./FrontEnd
+        run: npm run build
+      - working-directory: ./Build
+        run: cdk deploy --require-approval never

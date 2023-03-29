@@ -25,7 +25,7 @@ namespace Build
 
             new BucketDeployment(this, "CloudResumeChallengeBucketDeployment", new BucketDeploymentProps()
             {
-                Sources = new [] { Source.Asset("../FrontEnd/dist")},
+                Sources = new [] { Source.Asset("../FrontEnd/out")},
                 DestinationBucket = bucket
             });
             
