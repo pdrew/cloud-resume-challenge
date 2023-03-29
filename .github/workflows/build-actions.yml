@@ -1,4 +1,5 @@
 name: build-actions
+run-name: Building CDK app.
 on: [push]
 permissions:
   id-token: write
