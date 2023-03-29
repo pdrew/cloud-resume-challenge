@@ -1,5 +1,5 @@
 name: build-actions
-run-name: Building CDK app.
+run-name: Building and deploying.
 on: [push]
 permissions:
   id-token: write
@@ -21,9 +21,13 @@ jobs:
         with:
           node-version: '14'   
       - run: npm install -g aws-cdk
-      - working-directory: ./FrontEnd
-        run: npm ci
-      - working-directory: ./FrontEnd
-        run: npm run build
-      - working-directory: ./Build
+      - name: Build FrontEnd
+        working-directory: ./FrontEnd
+        run: |
+          pwd
+          npm ci
+          npm run build
+          touch out/.nojekyll
+      - name: Deploy
+        working-directory: ./Build
         run: cdk deploy --require-approval never
