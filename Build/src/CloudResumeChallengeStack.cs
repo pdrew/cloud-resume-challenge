@@ -113,7 +113,7 @@ namespace Build
             var restApi = new LambdaRestApi(this, "CloudResumeChallengeApi", new LambdaRestApiProps()
             {
                Handler = lambdaFunction,
-               Proxy = true,
+               Proxy = true
             });
 
             new CfnOutput(this, "ApiGatewayArn", new CfnOutputProps() { Value = restApi.ArnForExecuteApi() });

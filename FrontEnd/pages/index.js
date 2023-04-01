@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Layout, { siteTitle } from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
+import Counter from '../components/counter';
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <section className={utilStyles.headingMd}>
         <p>Hi! I'm Patrick Drew, <span>Software Engineer at <a href="https://www.tessituranetwork.com/">Tessitura Network.</a></span></p>
         <p>I built this page as part of the <span><a href="https://cloudresumechallenge.dev">Cloud Resume Challenge.</a></span></p>
+        <Counter />
       </section>
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Work Experience</h2>
