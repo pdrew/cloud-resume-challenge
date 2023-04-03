@@ -3,6 +3,7 @@ using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.CertificateManager;
 using Amazon.CDK.AWS.CloudFront;
 using Amazon.CDK.AWS.CloudFront.Origins;
+using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Logs;
@@ -47,7 +48,7 @@ namespace Build
                     ParentHostedZoneName = "patrickdrew.com",
                     DelegationRole = editorRole
                 });
-
+            
             var certificate = new DnsValidatedCertificate(this, "CloudResumeChallengeCertificate",
                 new DnsValidatedCertificateProps()
                 {
@@ -115,8 +116,17 @@ namespace Build
                Handler = lambdaFunction,
                Proxy = true
             });
-
+            
             new CfnOutput(this, "ApiGatewayArn", new CfnOutputProps() { Value = restApi.ArnForExecuteApi() });
+            
+            new Table(this, "CloudResumeChallengeDatabase", new TableProps()
+            {
+                PartitionKey = new Attribute()
+                {
+                    Name = "pk",
+                    Type = AttributeType.STRING
+                }
+            });
         }
     }
 }
