@@ -1,3 +1,10 @@
+using Amazon;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -18,6 +25,26 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
+
+var awsOptions = builder.Configuration.GetAWSOptions();
+
+/*
+var chain = new CredentialProfileStoreChain();
+
+if (!chain.TryGetAWSCredentials("crc-dev", out var credentials))
+    throw new Exception($"Failed to find the crc-dev profile");
+
+var awsOptions = new AWSOptions()
+{
+    Credentials = credentials,
+    Region = RegionEndpoint.APSoutheast2
+};
+*/
+
+builder.Services.AddDefaultAWSOptions(awsOptions);
+
+builder.Services.AddAWSService<IAmazonDynamoDB>();
+builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
 
 var app = builder.Build();
 

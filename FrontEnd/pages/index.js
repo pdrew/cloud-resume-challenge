@@ -1,9 +1,12 @@
 import Head from 'next/head';
 import Layout, { siteTitle } from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
-import Counter from '../components/counter';
+import Counter, { url } from '../components/counter';
+
+fetch(url, { method: 'POST' }).then().catch((err) => console.error(err));
 
 export default function Home() {
+
   return (
     <Layout home>
       <Head>

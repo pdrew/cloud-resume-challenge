@@ -84,6 +84,17 @@ namespace Build
             });
             
             //BackEnd
+            var table = new Table(this, "CloudResumeChallengeDatabase", new TableProps()
+            {
+                TableName = "CloudResumeChallengeDatabase",
+                PartitionKey = new Attribute()
+                {
+                    Name = "pk",
+                    Type = AttributeType.STRING
+                },
+                RemovalPolicy = RemovalPolicy.DESTROY
+            });
+            
             var bundlingOptions = new BundlingOptions()
             {
                 Image = Runtime.DOTNET_6.BundlingImage,
@@ -111,6 +122,64 @@ namespace Build
                 })
             });
             
+            lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
+            {
+                Sid = "DynamoDBIndexAndStreamAccess",
+                Effect = Effect.ALLOW,
+                Actions = new []
+                {
+                    "dynamodb:GetShardIterator",
+                    "dynamodb:Scan",
+                    "dynamodb:Query",
+                    "dynamodb:DescribeStream",
+                    "dynamodb:GetRecords",
+                    "dynamodb:ListStreams"
+                },
+                Resources = new []
+                {
+                    table.TableArn,
+                    $"{table.TableArn}/stream/*"
+                }
+            }));
+            
+            lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
+            {
+                Sid = "DynamoDBTableAccess",
+                Effect = Effect.ALLOW,
+                Actions = new []
+                {
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:BatchWriteItem",
+                    "dynamodb:ConditionCheckItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:Scan",
+                    "dynamodb:Query",
+                    "dynamodb:UpdateItem"
+                },
+                Resources = new []
+                {
+                    table.TableArn
+                }
+            }));
+            
+            lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
+            {
+                Sid = "DynamoDBDescribeLimitsAccess",
+                Effect = Effect.ALLOW,
+                Actions = new []
+                {
+                    "dynamodb:DescribeLimits"
+                },
+                Resources = new []
+                {
+                    table.TableArn,
+                    $"{table.TableArn}/stream/*"
+                }
+            }));
+            
             var restApi = new LambdaRestApi(this, "CloudResumeChallengeApi", new LambdaRestApiProps()
             {
                Handler = lambdaFunction,
@@ -118,15 +187,6 @@ namespace Build
             });
             
             new CfnOutput(this, "ApiGatewayArn", new CfnOutputProps() { Value = restApi.ArnForExecuteApi() });
-            
-            new Table(this, "CloudResumeChallengeDatabase", new TableProps()
-            {
-                PartitionKey = new Attribute()
-                {
-                    Name = "pk",
-                    Type = AttributeType.STRING
-                }
-            });
         }
     }
 }
