@@ -3,12 +3,19 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && next export",
-    "start": "next start"
+    "start": "next start",
+    "cypress": "cypress open",
+    "e2e": "start-server-and-test dev http://localhost:3000 \"cypress open --e2e\"",
+    "e2e:headless": "start-server-and-test dev http://localhost:3000 \"cypress run --e2e\""
   },
   "dependencies": {
     "next": "latest",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "swr": "^2.1.1"
+  },
+  "devDependencies": {
+    "cypress": "^12.9.0",
+    "start-server-and-test": "^2.0.0"
   }
 }
