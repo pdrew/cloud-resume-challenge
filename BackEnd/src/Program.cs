@@ -26,22 +26,24 @@ builder.Services.AddCors(options =>
         });
 });
 
-var awsOptions = builder.Configuration.GetAWSOptions();
-
-/*
 var chain = new CredentialProfileStoreChain();
 
-if (!chain.TryGetAWSCredentials("crc-dev", out var credentials))
-    throw new Exception($"Failed to find the crc-dev profile");
-
-var awsOptions = new AWSOptions()
+if(chain.TryGetAWSCredentials("crc-dev", out var credentials))
 {
-    Credentials = credentials,
-    Region = RegionEndpoint.APSoutheast2
-};
-*/
-
-builder.Services.AddDefaultAWSOptions(awsOptions);
+    var awsOptions = new AWSOptions()
+    {
+        Credentials = credentials,
+        Region = RegionEndpoint.APSoutheast2
+    };
+    
+    builder.Services.AddDefaultAWSOptions(awsOptions);
+} 
+else 
+{
+    var awsOptions = builder.Configuration.GetAWSOptions();
+    
+    builder.Services.AddDefaultAWSOptions(awsOptions);
+}
 
 builder.Services.AddAWSService<IAmazonDynamoDB>();
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();

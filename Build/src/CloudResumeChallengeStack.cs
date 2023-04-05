@@ -100,7 +100,7 @@ namespace Build
                 Image = Runtime.DOTNET_6.BundlingImage,
                 User = "root",
                 OutputType = BundlingOutput.ARCHIVED,
-                Command = new string[]
+                Command = new []
                 {
                     "/bin/sh",
                     "-c",
@@ -116,6 +116,7 @@ namespace Build
                 MemorySize = 256,
                 LogRetention = RetentionDays.ONE_DAY,
                 Handler = "BackEnd",
+                Timeout = Duration.Seconds(30),
                 Code = Code.FromAsset("../BackEnd/src/", new AssetOptions()
                 {
                     Bundling = bundlingOptions
