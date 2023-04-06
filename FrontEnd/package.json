@@ -5,8 +5,9 @@
     "build": "next build && next export",
     "start": "next start",
     "cypress": "cypress open",
-    "e2e": "start-server-and-test dev http://localhost:3000 \"cypress open --e2e\"",
-    "e2e:headless": "start-server-and-test dev http://localhost:3000 \"cypress run --e2e\""
+    "e2e": "start-server-and-test dev http://localhost:3000 \"cypress open --e2e --env RESUME_SITE_URL=http://localhost:3000\"",
+    "e2e:headless": "start-server-and-test dev http://localhost:3000 \"cypress run --e2e --env RESUME_SITE_URL=http://localhost:3000\"",
+    "smokeTest": "cypress run --e2e --env RESUME_SITE_URL=dev-resume.patrickdrew.com"
   },
   "dependencies": {
     "next": "latest",

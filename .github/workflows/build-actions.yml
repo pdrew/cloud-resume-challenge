@@ -31,3 +31,8 @@ jobs:
         run: | 
           npm install -g aws-cdk
           cdk deploy --require-approval never
+      - name: Smoke Test
+        working-directory: ./FrontEnd
+        run: |
+          npm ci
+          npm run smokeTest
