@@ -26,6 +26,7 @@ jobs:
           npm ci
           npm run build
           touch out/.nojekyll
+          mkdir ../dist
           cp -r ./out/* ../dist
       - name: Build BackEnd
         working-directory: ./BackEnd/src
