@@ -40,7 +40,7 @@ jobs:
           npm install -g aws-cdk
           cdk deploy --require-approval never --context useDockerBundling=false
       - name: Smoke Test
-        working-directory: ./FrontEnd
+        working-directory: ./FrontEnd/src
         run: |
           npm ci
           npm run smokeTest
