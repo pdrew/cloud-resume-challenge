@@ -200,7 +200,7 @@ namespace Build
         {
             if (!useDockerBundling)
             {
-                return Code.FromAsset("../BackEnd/dist/");
+                return Code.FromAsset("../BackEnd/dist/function.zip");
             }
             
             var bundlingOptions = new BundlingOptions()
