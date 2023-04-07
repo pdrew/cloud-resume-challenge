@@ -21,10 +21,9 @@ namespace Build
 {
     public class CloudResumeChallengeStack : Stack
     {
-        internal CloudResumeChallengeStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
+        internal CloudResumeChallengeStack(Construct scope, string id, bool useDockerBundling, IStackProps props = null) : base(scope, id, props)
         {
             //FrontEnd
-            
             var domainName = "dev-resume.patrickdrew.com";
             
             var bucket = new Bucket(this, "CloudResumeChallengeBucket", new BucketProps()
@@ -71,12 +70,11 @@ namespace Build
 
             new BucketDeployment(this, "CloudResumeChallengeBucketDeployment", new BucketDeploymentProps()
             {
-                Sources = new [] { Source.Asset("../FrontEnd/out")},
+                Sources = new [] { GetBucketSource(useDockerBundling) },
                 DestinationBucket = bucket,
                 Distribution = distribution,
             });
 
-            
             new ARecord(this, "CloudResumeChallengeARecord", new ARecordProps()
             {   
                 Zone = zone,
@@ -95,21 +93,6 @@ namespace Build
                 RemovalPolicy = RemovalPolicy.DESTROY
             });
             
-            var bundlingOptions = new BundlingOptions()
-            {
-                Image = Runtime.DOTNET_6.BundlingImage,
-                User = "root",
-                OutputType = BundlingOutput.ARCHIVED,
-                Command = new []
-                {
-                    "/bin/sh",
-                    "-c",
-                    "dotnet tool install -g Amazon.Lambda.Tools" +
-                    " && dotnet build" +
-                    " && dotnet lambda package --output-package /asset-output/function.zip"
-                }
-            };
-
             var lambdaFunction = new Function(this, "CloudResumeChallengeLambdaFunction", new FunctionProps()
             {
                 Runtime = Runtime.DOTNET_6,
@@ -117,10 +100,7 @@ namespace Build
                 LogRetention = RetentionDays.ONE_DAY,
                 Handler = "BackEnd",
                 Timeout = Duration.Seconds(30),
-                Code = Code.FromAsset("../BackEnd/src/", new AssetOptions()
-                {
-                    Bundling = bundlingOptions
-                })
+                Code = GetFunctionCode(useDockerBundling)
             });
             
             lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
@@ -181,13 +161,67 @@ namespace Build
                 }
             }));
             
-            var restApi = new LambdaRestApi(this, "CloudResumeChallengeApi", new LambdaRestApiProps()
+            new LambdaRestApi(this, "CloudResumeChallengeApi", new LambdaRestApiProps()
             {
                Handler = lambdaFunction,
                Proxy = true
             });
+        }
+
+        private ISource GetBucketSource(bool useDockerBundling)
+        {
+            if (!useDockerBundling)
+            {
+                return Source.Asset("../FrontEnd/dist/");
+            }
             
-            new CfnOutput(this, "ApiGatewayArn", new CfnOutputProps() { Value = restApi.ArnForExecuteApi() });
+            var bundlingOptions = new BundlingOptions()
+            {
+                Image = DockerImage.FromRegistry("node:lts"),
+                User = "root",
+                OutputType = BundlingOutput.NOT_ARCHIVED,
+                Command = new []
+                {
+                    "/bin/sh",
+                    "-c",
+                    "npm ci" +
+                    " && npm run build" +
+                    " && cp -r /asset-input/out/* /asset-output/"
+                }
+            };
+
+            return Source.Asset("../FrontEnd/src", new AssetOptions()
+            {
+                Bundling = bundlingOptions
+            });
+        }
+
+        private Code GetFunctionCode(bool useDockerBundling)
+        {
+            if (!useDockerBundling)
+            {
+                return Code.FromAsset("../BackEnd/dist/");
+            }
+            
+            var bundlingOptions = new BundlingOptions()
+            {
+                Image = Runtime.DOTNET_6.BundlingImage,
+                User = "root",
+                OutputType = BundlingOutput.ARCHIVED,
+                Command = new []
+                {
+                    "/bin/sh",
+                    "-c",
+                    "dotnet tool install -g Amazon.Lambda.Tools" +
+                    " && dotnet build" +
+                    " && dotnet lambda package --output-package /asset-output/function.zip"
+                }
+            };
+
+            return Code.FromAsset("../BackEnd/src/", new AssetOptions()
+            {
+                Bundling = bundlingOptions
+            });
         }
     }
 }

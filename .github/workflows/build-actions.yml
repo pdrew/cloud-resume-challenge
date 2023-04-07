@@ -21,16 +21,23 @@ jobs:
         with:
           node-version: '18.15.x'
       - name: Build FrontEnd
-        working-directory: ./FrontEnd
+        working-directory: ./FrontEnd/src
         run: |
           npm ci
           npm run build
           touch out/.nojekyll
+          cp -r ./out/* ../dist
+      - name: Build BackEnd
+        working-directory: ./BackEnd/src
+        run: |
+          dotnet tool install -g Amazon.Lambda.Tools
+          dotnet build
+          dotnet lambda package --output-package ../dist/function.zip
       - name: Deploy
         working-directory: ./Build
         run: | 
           npm install -g aws-cdk
-          cdk deploy --require-approval never
+          cdk deploy --require-approval never --context useDockerBundling=false
       - name: Smoke Test
         working-directory: ./FrontEnd
         run: |

@@ -10,7 +10,12 @@ namespace Build
         public static void Main(string[] args)
         {
             var app = new App();
-            new CloudResumeChallengeStack(app, "CloudResumeChallengeStack", new StackProps
+
+            var bundlingContext = app.Node.TryGetContext("useDockerBundling")?.ToString();
+
+            var useDockerBundling = bundlingContext is null || bool.Parse(bundlingContext);
+            
+            new CloudResumeChallengeStack(app, "CloudResumeChallengeStack", useDockerBundling, new StackProps
             {
                 // If you don't specify 'env', this stack will be environment-agnostic.
                 // Account/Region-dependent features and context lookups will not work,
