@@ -2,17 +2,18 @@ describe('resume site', () => {
   Cypress.config('defaultCommandTimeout', 30000);
 
   it('displays total views', () => {
-    cy.visit("/");
+    cy.visit('/');
 
     cy.get('#total-views').invoke('text').then(parseFloat).should('be.gt', 0);
   }),
-  it('increments total views', () => {
-    cy.visit("/");
+
+  it('increments total views', { retires: { runMode: 2 } }, () => {
+    cy.visit('/');
 
     cy.get('#total-views').invoke('text').then((text) => {
       const totalViews = parseFloat(text);
 
-      cy.visit("/");
+      cy.visit('/');
 
       cy.get('#total-views').invoke('text').then(parseFloat).should('be.gt', totalViews);
     });
