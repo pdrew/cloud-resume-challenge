@@ -2,7 +2,7 @@ import useSWR, { mutate } from 'swr';
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-export const url = 'https://2azrjwirb3.execute-api.ap-southeast-2.amazonaws.com/prod/views';
+export const url = `https://${process.env.NEXT_PUBLIC_API_DOMAIN}/views`;
 
 export default function Counter() {
     const { data, error, isLoading } = useSWR(url, fetcher)

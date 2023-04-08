@@ -1,9 +1,12 @@
 ﻿using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
+using Amazon.CDK.AWS.CertificateManager;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Logs;
+using Amazon.CDK.AWS.Route53;
+using Amazon.CDK.AWS.Route53.Targets;
 using Constructs;
 using AssetOptions = Amazon.CDK.AWS.S3.Assets.AssetOptions;
 
@@ -11,8 +14,16 @@ namespace Build;
 
 public class BackEnd : Construct
 {
-    public BackEnd(Construct scope, string id, bool useDockerBundling) : base(scope, id)
+    public BackEnd(Construct scope, string id, bool useDockerBundling, IHostedZone zone) : base(scope, id)
     {
+        var subdomainName = $"resume-api.{zone.ZoneName}";
+        
+        var certificate = new Certificate(this, "CloudResumeChallengeBackEndCertificate", new CertificateProps()
+        {
+            DomainName = subdomainName,
+            Validation = CertificateValidation.FromDns(zone) 
+        });
+        
         var table = new Table(this, "CloudResumeChallengeDatabase", new TableProps()
             {
                 TableName = "CloudResumeChallengeDatabase",
@@ -92,14 +103,24 @@ public class BackEnd : Construct
                 }
             }));
             
-            new LambdaRestApi(this, "CloudResumeChallengeApi", new LambdaRestApiProps()
+            var api = new LambdaRestApi(this, "CloudResumeChallengeApi", new LambdaRestApiProps()
             {
                Handler = lambdaFunction,
-               Proxy = true
+               Proxy = true,
+               DomainName = new DomainNameOptions()
+               {
+                   DomainName = subdomainName,
+                   Certificate = certificate
+               }
             });
-        
+            
+            new ARecord(this, "CloudResumeChallengeBackEndARecord", new ARecordProps()
+            {
+                RecordName = "resume-api",
+                Zone = zone,
+                Target = RecordTarget.FromAlias(new ApiGateway(api))
+            });
     }
-    
     
     private Code GetFunctionCode(bool useDockerBundling)
     {

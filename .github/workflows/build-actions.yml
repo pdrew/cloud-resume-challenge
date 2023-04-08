@@ -7,6 +7,9 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      API_DOMAIN: resume-api.test.patrickdrew.com
+      CYPRESS_BASE_URL: https://resume.test.patrickdrew.com
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v2
@@ -42,5 +45,4 @@ jobs:
       - name: Smoke Test
         working-directory: ./FrontEnd/src
         run: |
-          npm ci
           npm run smokeTest
