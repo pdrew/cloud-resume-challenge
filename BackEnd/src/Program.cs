@@ -21,7 +21,8 @@ builder.Services.AddCors(options =>
         {
             policy
                 .WithOrigins(
-                    "https://*.patrickdrew.com"
+                    "https://resume.test.patrickdrew.com",
+                    "https://resume.patrickdrew.com"
                 )
                 .WithMethods(
                     "GET", 
