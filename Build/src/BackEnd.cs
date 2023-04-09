@@ -1,4 +1,5 @@
-﻿using Amazon.CDK;
+﻿using System.Collections.Generic;
+using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.CertificateManager;
 using Amazon.CDK.AWS.DynamoDB;
@@ -111,6 +112,19 @@ public class BackEnd : Construct
                {
                    DomainName = subdomainName,
                    Certificate = certificate
+               },
+               DeployOptions = new StageOptions()
+               {
+                   MethodOptions = new Dictionary<string, IMethodDeploymentOptions>()
+                   {
+                       {
+                           "*/*", new MethodDeploymentOptions()
+                           {
+                               ThrottlingBurstLimit = 1000,
+                               ThrottlingRateLimit = 10
+                           }
+                       }
+                   }
                }
             });
             
