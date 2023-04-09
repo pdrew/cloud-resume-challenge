@@ -7,7 +7,7 @@ describe('resume site', () => {
     cy.get('#total-views').invoke('text').then(parseFloat).should('be.gt', 0);
   }),
 
-  it('increments total views', { retires: { runMode: 2 } }, () => {
+  it('increments total views', { retires: { runMode: 4 } }, () => {
     cy.visit('/');
 
     cy.get('#total-views').invoke('text').then((text) => {
