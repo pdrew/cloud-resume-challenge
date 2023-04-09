@@ -118,7 +118,7 @@ public class BackEnd : Construct
                    MethodOptions = new Dictionary<string, IMethodDeploymentOptions>()
                    {
                        {
-                           "*/*", new MethodDeploymentOptions()
+                           "/*", new MethodDeploymentOptions()
                            {
                                ThrottlingBurstLimit = 1000,
                                ThrottlingRateLimit = 10
