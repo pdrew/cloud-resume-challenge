@@ -20,9 +20,15 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
+                .WithOrigins(
+                    "https://resume.test.patrickdrew.com",
+                    "https://resume.patrickdrew.com"
+                )
+                .WithMethods(
+                    "GET", 
+                    "POST"
+                )
+                .AllowAnyHeader();
         });
 });
 
@@ -33,7 +39,7 @@ if(chain.TryGetAWSCredentials("crc-dev", out var credentials))
     var awsOptions = new AWSOptions()
     {
         Credentials = credentials,
-        Region = RegionEndpoint.APSoutheast2
+        Region = RegionEndpoint.USEast1
     };
     
     builder.Services.AddDefaultAWSOptions(awsOptions);
@@ -54,7 +60,5 @@ app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
-
-app.MapGet("/", () => "Welcome to running ASP.NET Core Minimal API on AWS Lambda");
 
 app.Run();
