@@ -23,6 +23,16 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18.15.x'
+      - name: Generate SBOM
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          mkdir SBOM
+          syft . > SBOM/SBOM.txt
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v3
+        with:
+          name: SBOM
+          path: SBOM/SBOM.txt
       - name: Build FrontEnd
         working-directory: ./FrontEnd/src
         run: |
