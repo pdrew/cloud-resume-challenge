@@ -40,7 +40,7 @@ jobs:
       - name: Create SBOM
         uses: anchore/sbom-action@v0
         with:
-          format: txt
+          format: syft-text
           output-file: "${{ github.event.repository.name }}-sbom.txt"
       - name: Scan SBOM
         uses: anchore/scan-action@v3
