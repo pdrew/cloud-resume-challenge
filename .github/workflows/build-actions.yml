@@ -41,11 +41,11 @@ jobs:
         uses: anchore/sbom-action@v0
         with:
           format: spdx-json
-          output-file: "${{ github.event.repository.name }}-sbom.spdx.json"
+          output-file: cloud-resume-challenge-sbom.spdx.json
       - name: Scan SBOM
         uses: anchore/scan-action@v3
         with:
-          sbom: "${{ github.event.repository.name }}-sbom.spdx.json"
+          sbom: cloud-resume-challenge-sbom.spdx.json
       - name: Deploy
         working-directory: ./Build
         run: | 
