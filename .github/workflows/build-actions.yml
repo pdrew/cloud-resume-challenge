@@ -37,16 +37,20 @@ jobs:
           dotnet tool install -g Amazon.Lambda.Tools
           dotnet build
           dotnet lambda package --output-package ../dist/function.zip
-      - name: Generate SBOM
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
-          mkdir SBOM
-          syft . > SBOM/SBOM.txt
+      - name: Create SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          format: txt
+          output-file: "${{ github.event.repository.name }}-sbom.txt"
+      - name: Scan SBOM
+        uses: anchore/scan-action@v3
+        with:
+          sbom: "${{ github.event.repository.name }}-sbom.txt"
       - name: Upload SBOM
         uses: actions/upload-artifact@v3
         with:
           name: SBOM
-          path: SBOM/SBOM.txt
+          path: "${{ github.event.repository.name }}-sbom.txt"
       - name: Deploy
         working-directory: ./Build
         run: | 
