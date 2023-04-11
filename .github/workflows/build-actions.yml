@@ -40,17 +40,12 @@ jobs:
       - name: Create SBOM
         uses: anchore/sbom-action@v0
         with:
-          format: syft-text
-          output-file: "${{ github.event.repository.name }}-sbom.txt"
+          format: spdx-json
+          output-file: "${{ github.event.repository.name }}-sbom.spdx.json"
       - name: Scan SBOM
         uses: anchore/scan-action@v3
         with:
-          sbom: "${{ github.event.repository.name }}-sbom.txt"
-      - name: Upload SBOM
-        uses: actions/upload-artifact@v3
-        with:
-          name: SBOM
-          path: "${{ github.event.repository.name }}-sbom.txt"
+          sbom: "${{ github.event.repository.name }}-sbom.spdx.json"
       - name: Deploy
         working-directory: ./Build
         run: | 
