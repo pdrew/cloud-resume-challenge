@@ -18,19 +18,20 @@ public class FrontEnd : Construct
     {
         var subdomainName = $"resume.{zone.ZoneName}"; 
         
-        var certificate = new Certificate(this, "CloudResumeChallengeFrontEndCertificate", new CertificateProps()
+        var certificate = new Certificate(this, "Certificate", new CertificateProps()
         {
             DomainName = subdomainName,
             Validation = CertificateValidation.FromDns(zone) 
         });
         
-        var bucket = new Bucket(this, "CloudResumeChallengeBucket", new BucketProps()
+        var bucket = new Bucket(this, "Bucket", new BucketProps()
         {
             BlockPublicAccess = BlockPublicAccess.BLOCK_ALL,
-            RemovalPolicy = RemovalPolicy.DESTROY
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            AutoDeleteObjects = true
         });
         
-        var distribution = new Distribution(this, "CloudResumeChallengeDistribution", new DistributionProps()
+        var distribution = new Distribution(this, "Distribution", new DistributionProps()
         {
             DefaultRootObject = "index.html",
             DefaultBehavior = new BehaviorOptions()
@@ -42,14 +43,14 @@ public class FrontEnd : Construct
             Certificate = certificate
         });
 
-        new BucketDeployment(this, "CloudResumeChallengeBucketDeployment", new BucketDeploymentProps()
+        new BucketDeployment(this, "BucketDeployment", new BucketDeploymentProps()
         {
             Sources = new [] { GetBucketSource(useDockerBundling, zone.ZoneName) },
             DestinationBucket = bucket,
             Distribution = distribution,
         });
 
-        new ARecord(this, "CloudResumeChallengeFrontEndARecord", new ARecordProps()
+        new ARecord(this, "ARecord", new ARecordProps()
         {
             RecordName = "resume",
             Zone = zone,

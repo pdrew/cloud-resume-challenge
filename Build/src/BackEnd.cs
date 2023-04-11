@@ -20,13 +20,13 @@ public class BackEnd : Construct
     {
         var subdomainName = $"resume-api.{zone.ZoneName}";
         
-        var certificate = new Certificate(this, "CloudResumeChallengeBackEndCertificate", new CertificateProps()
+        var certificate = new Certificate(this, "Certificate", new CertificateProps()
         {
             DomainName = subdomainName,
             Validation = CertificateValidation.FromDns(zone) 
         });
         
-        var table = new Table(this, "CloudResumeChallengeDatabase", new TableProps()
+        var table = new Table(this, "DynamoTable", new TableProps()
         {
             TableName = "CloudResumeChallengeDatabase",
             PartitionKey = new Attribute()
@@ -45,10 +45,10 @@ public class BackEnd : Construct
         var signingConfig = new CodeSigningConfig(this, "CodeSigningConfig", new CodeSigningConfigProps()
         {
             SigningProfiles = new [] { signingProfile },
-            UntrustedArtifactOnDeployment = UntrustedArtifactOnDeployment.ENFORCE
+            // UntrustedArtifactOnDeployment = UntrustedArtifactOnDeployment.ENFORCE
         }); 
         
-        var lambdaFunction = new Function(this, "CloudResumeChallengeLambdaFunction", new FunctionProps()
+        var lambdaFunction = new Function(this, "LambdaFunction", new FunctionProps()
         {
             Runtime = Runtime.DOTNET_6,
             MemorySize = 256,
@@ -117,7 +117,7 @@ public class BackEnd : Construct
             }
         }));
             
-        var api = new LambdaRestApi(this, "CloudResumeChallengeApi", new LambdaRestApiProps()
+        var api = new LambdaRestApi(this, "Api", new LambdaRestApiProps()
         {
            Handler = lambdaFunction,
            Proxy = true,
@@ -141,7 +141,7 @@ public class BackEnd : Construct
            }
         });
             
-        new ARecord(this, "CloudResumeChallengeBackEndARecord", new ARecordProps()
+        new ARecord(this, "ARecord", new ARecordProps()
         {
             RecordName = "resume-api",
             Zone = zone,
@@ -170,7 +170,7 @@ public class BackEnd : Construct
                 " && dotnet lambda package --output-package /asset-output/function.zip"
             }
         };
-
+        
         return Code.FromAsset("../BackEnd/src/", new AssetOptions()
         {
             Bundling = bundlingOptions

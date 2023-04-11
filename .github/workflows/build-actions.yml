@@ -1,5 +1,4 @@
 name: build-actions
-run-name: Build and deploy.
 on: [push]
 permissions:
   id-token: write
