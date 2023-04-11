@@ -44,9 +44,10 @@ public class BackEnd : Construct
 
         var signingConfig = new CodeSigningConfig(this, "CodeSigningConfig", new CodeSigningConfigProps()
         {
-            SigningProfiles = new [] { signingProfile }
-        });
-            
+            SigningProfiles = new [] { signingProfile },
+            UntrustedArtifactOnDeployment = UntrustedArtifactOnDeployment.ENFORCE
+        }); 
+        
         var lambdaFunction = new Function(this, "CloudResumeChallengeLambdaFunction", new FunctionProps()
         {
             Runtime = Runtime.DOTNET_6,
