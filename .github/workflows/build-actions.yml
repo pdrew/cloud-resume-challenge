@@ -41,6 +41,7 @@ jobs:
         uses: anchore/sbom-action@v0
         with:
           format: spdx-json
+          artifact-name: cloud-resume-challenge-sbom.spdx.json
           output-file: cloud-resume-challenge-sbom.spdx.json
       - name: Scan SBOM
         uses: anchore/scan-action@v3
