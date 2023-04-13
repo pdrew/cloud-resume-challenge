@@ -8,10 +8,12 @@ using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.Route53;
 using Amazon.CDK.AWS.Route53.Targets;
+using Amazon.CDK.AWS.S3;
+using Amazon.CDK.AWS.S3.Deployment;
 using Amazon.CDK.AWS.Signer;
 using Constructs;
 using AssetOptions = Amazon.CDK.AWS.S3.Assets.AssetOptions;
-
+using BundlingOptions = Amazon.CDK.BundlingOptions;
 namespace Build;
 
 public class BackEnd : Construct
@@ -46,7 +48,42 @@ public class BackEnd : Construct
         {
             SigningProfiles = new [] { signingProfile },
             // UntrustedArtifactOnDeployment = UntrustedArtifactOnDeployment.ENFORCE
-        }); 
+        });
+        
+        var bucket = new Bucket(this, "Bucket", new BucketProps()
+        {
+            BlockPublicAccess = BlockPublicAccess.BLOCK_ALL,
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            AutoDeleteObjects = true,
+            Versioned = true
+        });
+        
+        var bundlingOptions = new BundlingOptions()
+        {
+            Image = Runtime.DOTNET_6.BundlingImage,
+            User = "root",
+            OutputType = BundlingOutput.ARCHIVED,
+            Command = new []
+            {
+                "/bin/sh",
+                "-c",
+                "dotnet tool install -g Amazon.Lambda.Tools" +
+                " && dotnet build" +
+                " && dotnet lambda package --output-package /asset-output/function.zip"
+            }
+        };
+        
+        new BucketDeployment(this, "BucketDeployment", new BucketDeploymentProps()
+        {
+            Sources = new [] 
+            { 
+                Source.Asset("../BackEnd/src", new AssetOptions()
+                {
+                    Bundling = bundlingOptions
+                }) 
+            },
+            DestinationBucket = bucket
+        });
         
         var lambdaFunction = new Function(this, "LambdaFunction", new FunctionProps()
         {
