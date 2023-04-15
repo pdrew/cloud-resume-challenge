@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.CertificateManager;
@@ -11,8 +12,10 @@ using Amazon.CDK.AWS.Route53.Targets;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.S3.Deployment;
 using Amazon.CDK.AWS.Signer;
+using Amazon.CDK.CustomResources;
 using Constructs;
 using AssetOptions = Amazon.CDK.AWS.S3.Assets.AssetOptions;
+using Attribute = Amazon.CDK.AWS.DynamoDB.Attribute;
 using BundlingOptions = Amazon.CDK.BundlingOptions;
 namespace Build;
 
@@ -82,7 +85,37 @@ public class BackEnd : Construct
                     Bundling = bundlingOptions
                 }) 
             },
-            DestinationBucket = bucket
+            DestinationBucket = bucket,
+            DestinationKeyPrefix = "Unsigned",
+            Extract = false
+        });
+
+        var codeSignerFunction = new Function(this, "CodeSignerFunction", new FunctionProps()
+        {
+            Runtime = Runtime.DOTNET_6,
+            MemorySize = 256,
+            LogRetention = RetentionDays.ONE_DAY,
+            Handler = "CodeSigner::CodeSigner.Function::FunctionHandler",
+            Timeout = Duration.Seconds(30),
+            Code = Code.FromAsset("../CodeSigner/src/", new AssetOptions()
+            {
+                Bundling = bundlingOptions
+            }),
+        });
+
+        var codeSignerProvider = new Provider(this, "CodeSignerProvider", new ProviderProps()
+        {
+            OnEventHandler = codeSignerFunction
+        });
+
+        new CustomResource(this, "CodeSignerResource", new CustomResourceProps()
+        {
+            ServiceToken = codeSignerProvider.ServiceToken,
+            Properties = new Dictionary<string, object>()
+            {
+                { "BucketArn", bucket.BucketArn },
+                { "TimeStamp", DateTimeOffset.Now.ToUnixTimeSeconds() },
+            },
         });
         
         var lambdaFunction = new Function(this, "LambdaFunction", new FunctionProps()

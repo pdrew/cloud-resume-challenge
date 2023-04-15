@@ -34,11 +34,12 @@ public class Function
 
         return new CustomResourceResponse()
         {
-            Status = "SUCCESS",
-            LogicalResourceId = input.LogicalResourceId,
-            StackId = input.StackId,
             PhysicalResourceId = input.PhysicalResourceId,
-            RequestId = input.RequestId
+            
+            Data = new Dictionary<string, object>()
+            {
+                { "Foo", "Bar" }
+            }
         };
     }
 }
