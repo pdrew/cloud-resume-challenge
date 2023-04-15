@@ -1,6 +1,6 @@
 ﻿namespace CodeSigner;
 
-public class CustomResourceEvent
+public class CustomResourceEvent<T>
 {
     public string? RequestType { get; set; }
     public string? StackId { get; set; }
@@ -10,7 +10,7 @@ public class CustomResourceEvent
     public string? ResourceType { get; set; }
     public string? PhysicalResourceId { get; set; }
     
-    public Dictionary<string, object> ResourceProperties { get; set; }
+    public T ResourceProperties { get; set; }
 }
 
 public class CustomResourceResponse

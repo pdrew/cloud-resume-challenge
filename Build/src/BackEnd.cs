@@ -50,7 +50,7 @@ public class BackEnd : Construct
         var signingConfig = new CodeSigningConfig(this, "CodeSigningConfig", new CodeSigningConfigProps()
         {
             SigningProfiles = new [] { signingProfile },
-            // UntrustedArtifactOnDeployment = UntrustedArtifactOnDeployment.ENFORCE
+            UntrustedArtifactOnDeployment = UntrustedArtifactOnDeployment.ENFORCE
         });
         
         var bucket = new Bucket(this, "Bucket", new BucketProps()
@@ -76,7 +76,7 @@ public class BackEnd : Construct
             }
         };
         
-        new BucketDeployment(this, "BucketDeployment", new BucketDeploymentProps()
+        var bucketDeployment = new BucketDeployment(this, "BucketDeployment", new BucketDeploymentProps()
         {
             Sources = new [] 
             { 
@@ -101,22 +101,62 @@ public class BackEnd : Construct
             {
                 Bundling = bundlingOptions
             }),
+            Description = "CodeSignerFunction"
         });
+        
+        codeSignerFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
+        {
+            Sid = "SignerAccess",
+            Effect = Effect.ALLOW,
+            Actions = new []
+            {
+                "signer:StartSigningJob",
+                "signer:DescribeSigningJob"
+            },
+            Resources = new []
+            {
+                "*"
+            }
+        }));
+        
+        codeSignerFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
+        {
+            Sid = "S3ObjectVersionAccess",
+            Effect = Effect.ALLOW,
+            Actions = new []
+            {
+                "s3:ListBucketVersions",
+                "s3:GetObjectVersion",
+                "s3:PutObject",
+                "s3:ListBucket"
+            },
+            Resources = new []
+            {
+                bucket.BucketArn,
+                $"{bucket.BucketArn}/*"
+            }
+        }));
 
         var codeSignerProvider = new Provider(this, "CodeSignerProvider", new ProviderProps()
         {
             OnEventHandler = codeSignerFunction
         });
-
-        new CustomResource(this, "CodeSignerResource", new CustomResourceProps()
+        
+        var codeSignerResource = new CustomResource(this, "CodeSignerResource", new CustomResourceProps()
         {
             ServiceToken = codeSignerProvider.ServiceToken,
             Properties = new Dictionary<string, object>()
             {
-                { "BucketArn", bucket.BucketArn },
+                { "ProfileName", signingProfile.SigningProfileName },
+                { "BucketName", bucket.BucketName },
+                { "ObjectKey", $"Unsigned/{Fn.Select(0, bucketDeployment.ObjectKeys)}" },                
                 { "TimeStamp", DateTimeOffset.Now.ToUnixTimeSeconds() },
             },
         });
+
+        var signedObjectKey = codeSignerResource.GetAttString("Key");
+
+        new CfnOutput(this, "SignedObjectKey", new CfnOutputProps() { Value = signedObjectKey });
         
         var lambdaFunction = new Function(this, "LambdaFunction", new FunctionProps()
         {
@@ -125,8 +165,9 @@ public class BackEnd : Construct
             LogRetention = RetentionDays.ONE_DAY,
             Handler = "BackEnd",
             Timeout = Duration.Seconds(30),
-            Code = GetFunctionCode(useDockerBundling),
-            CodeSigningConfig = signingConfig
+            Code = Code.FromBucket(bucket, signedObjectKey),
+            CodeSigningConfig = signingConfig,
+            Description = "ViewStatisticsFunction"
         });
             
         lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
