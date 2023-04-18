@@ -27,9 +27,13 @@ namespace Build
                     DelegationRole = editorRole
                 });
             
-            new BackEnd(this, "CloudResumeChallengeBackEnd", useDockerBundling, zone);
             
             new FrontEnd(this, "CloudResumeChallengeFrontEnd", useDockerBundling, zone);
+            
+            new BackEnd(this, "CloudResumeChallengeBackEnd", new BackEndProps()
+            {
+                HostedZone = zone
+            });
         }
     }
 }

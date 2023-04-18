@@ -4,6 +4,8 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
+using Amazon.Util;
+using BackEnd.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +23,7 @@ builder.Services.AddCors(options =>
         {
             policy
                 .WithOrigins(
-                    "https://resume.test.patrickdrew.com",
-                    "https://resume.patrickdrew.com"
+                    $"https://{Environment.GetEnvironmentVariable("FRONTEND_DOMAIN")}"
                 )
                 .WithMethods(
                     "GET", 
@@ -45,7 +46,7 @@ if(chain.TryGetAWSCredentials("crc-dev", out var credentials))
     builder.Services.AddDefaultAWSOptions(awsOptions);
 } 
 else 
-{
+{ 
     var awsOptions = builder.Configuration.GetAWSOptions();
     
     builder.Services.AddDefaultAWSOptions(awsOptions);
@@ -53,6 +54,9 @@ else
 
 builder.Services.AddAWSService<IAmazonDynamoDB>();
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
+
+AWSConfigsDynamoDB.Context.AddMapping(new TypeMapping(
+    typeof(ViewStatistics), Environment.GetEnvironmentVariable("DYNAMODB_TABLE")));
 
 var app = builder.Build();
 

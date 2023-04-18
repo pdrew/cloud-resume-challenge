@@ -3,7 +3,6 @@ using Amazon.DynamoDBv2.DataModel;
 
 namespace BackEnd.Models;
 
-[DynamoDBTable("CloudResumeChallengeDatabase")]
 public class ViewStatistics
 {
     public ViewStatistics()

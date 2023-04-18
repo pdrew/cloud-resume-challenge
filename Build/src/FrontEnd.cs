@@ -14,6 +14,8 @@ namespace Build;
 
 public class FrontEnd : Construct
 {
+    
+    
     public FrontEnd(Construct scope, string id, bool useDockerBundling, IHostedZone zone) : base(scope, id)
     {
         var subdomainName = $"resume.{zone.ZoneName}"; 

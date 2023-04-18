@@ -21,14 +21,14 @@ namespace Build;
 
 public class BackEnd : Construct
 {
-    public BackEnd(Construct scope, string id, bool useDockerBundling, IHostedZone zone) : base(scope, id)
+    public BackEnd(Construct scope, string id, BackEndProps props) : base(scope, id)
     {
-        var subdomainName = $"resume-api.{zone.ZoneName}";
+        var subdomainName = $"resume-api.{props.HostedZone.ZoneName}";
         
         var certificate = new Certificate(this, "Certificate", new CertificateProps()
         {
             DomainName = subdomainName,
-            Validation = CertificateValidation.FromDns(zone) 
+            Validation = CertificateValidation.FromDns(props.HostedZone) 
         });
         
         var table = new Table(this, "DynamoTable", new TableProps()
@@ -167,7 +167,12 @@ public class BackEnd : Construct
             Timeout = Duration.Seconds(30),
             Code = Code.FromBucket(bucket, signedObjectKey),
             CodeSigningConfig = signingConfig,
-            Description = "ViewStatisticsFunction"
+            Description = "ViewStatisticsFunction",
+            Environment = new Dictionary<string, string>()
+            {
+                { "DYNAMODB_TABLE", table.TableName },
+                { "FRONTEND_DOMAIN",  $"resume.{props.HostedZone.ZoneName}"  }
+            }
         });
             
         lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
@@ -251,11 +256,11 @@ public class BackEnd : Construct
                }
            }
         });
-            
+        
         new ARecord(this, "ARecord", new ARecordProps()
         {
             RecordName = "resume-api",
-            Zone = zone,
+            Zone = props.HostedZone,
             Target = RecordTarget.FromAlias(new ApiGateway(api))
         });
     }
