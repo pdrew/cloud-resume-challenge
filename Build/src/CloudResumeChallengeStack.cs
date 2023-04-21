@@ -1,3 +1,4 @@
+using System;
 using Amazon.CDK;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Route53;
@@ -7,13 +8,34 @@ namespace Build
 {
     public class CloudResumeChallengeStack : Stack
     {
-        internal CloudResumeChallengeStack(Construct scope, string id, bool useDockerBundling, IStackProps props = null) : base(scope, id, props)
+        internal CloudResumeChallengeStack(Construct scope, string id, CloudResumeChallengeStackProps props) : base(scope, id, props)
         {
-            var domainName = "test.patrickdrew.com";
+            var zone = GetHostedZone(props.EnvironmentDescription, props.DomainName);
+            
+            new FrontEnd(this, "CloudResumeChallengeFrontEnd", new FrontEndProps()
+            {
+                HostedZone = zone
+            });
+            
+            new BackEnd(this, "CloudResumeChallengeBackEnd", new BackEndProps()
+            {
+                HostedZone = zone
+            });
+        }
+
+        private IHostedZone GetHostedZone(string environmentDescription, string domainName)
+        {
+            if (environmentDescription.Equals("prod", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return HostedZone.FromLookup(this, "CloudResumeChallengeHostedZone", new HostedZoneProviderProps()
+                {
+                    DomainName = domainName
+                });
+            }
             
             var zone = new PublicHostedZone(this, "CloudResumeChallengeHostedZone", new PublicHostedZoneProps()
             {
-                ZoneName = domainName
+                ZoneName = $"{environmentDescription.ToLower()}.{domainName.ToLower()}"
             });
             
             var editorRole = Role.FromRoleArn(this, "ParentHostedZoneEditorRole",
@@ -23,17 +45,11 @@ namespace Build
                 new CrossAccountZoneDelegationRecordProps()
                 {
                     DelegatedZone = zone,
-                    ParentHostedZoneName = "patrickdrew.com",
+                    ParentHostedZoneName = domainName,
                     DelegationRole = editorRole
                 });
-            
-            
-            new FrontEnd(this, "CloudResumeChallengeFrontEnd", useDockerBundling, zone);
-            
-            new BackEnd(this, "CloudResumeChallengeBackEnd", new BackEndProps()
-            {
-                HostedZone = zone
-            });
+
+            return zone;
         }
     }
 }

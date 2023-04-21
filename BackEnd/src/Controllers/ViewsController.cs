@@ -20,7 +20,7 @@ public class ViewsController : ControllerBase
     [HttpGet]
     public async Task<ViewStatistics> Index()
     {
-        var statistics = await db.LoadAsync<ViewStatistics>("ViewStatistics") ?? new ViewStatistics();
+        var statistics = await db.LoadAsync<ViewStatistics>(nameof(ViewStatistics)) ?? new ViewStatistics();
 
         return statistics;
     }
@@ -28,7 +28,7 @@ public class ViewsController : ControllerBase
     [HttpPost]
     public async Task<ViewStatistics> Increment()
     {
-        var statistics = await db.LoadAsync<ViewStatistics>("ViewStatistics") ?? new ViewStatistics();
+        var statistics = await db.LoadAsync<ViewStatistics>(nameof(ViewStatistics)) ?? new ViewStatistics();
 
         statistics.Total++;
 

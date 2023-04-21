@@ -53,7 +53,7 @@ jobs:
         working-directory: ./Build
         run: | 
           npm install -g aws-cdk
-          cdk deploy --require-approval never --context useDockerBundling=false
+          cdk deploy --require-approval never --context environment=test --context domain=patrickdrew.com
       - name: Smoke Test
         working-directory: ./FrontEnd/src
         run: |

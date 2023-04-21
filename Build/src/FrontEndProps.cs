@@ -2,7 +2,7 @@
 
 namespace Build;
 
-public class BackEndProps
+public class FrontEndProps
 {
     public IHostedZone HostedZone { get; set; }
 }

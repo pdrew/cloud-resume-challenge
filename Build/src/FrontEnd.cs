@@ -16,14 +16,14 @@ public class FrontEnd : Construct
 {
     
     
-    public FrontEnd(Construct scope, string id, bool useDockerBundling, IHostedZone zone) : base(scope, id)
+    public FrontEnd(Construct scope, string id, FrontEndProps props) : base(scope, id)
     {
-        var subdomainName = $"resume.{zone.ZoneName}"; 
+        var subdomainName = $"resume.{props.HostedZone.ZoneName}"; 
         
         var certificate = new Certificate(this, "Certificate", new CertificateProps()
         {
             DomainName = subdomainName,
-            Validation = CertificateValidation.FromDns(zone) 
+            Validation = CertificateValidation.FromDns(props.HostedZone) 
         });
         
         var bucket = new Bucket(this, "Bucket", new BucketProps()
@@ -44,29 +44,7 @@ public class FrontEnd : Construct
             DomainNames = new []{ subdomainName },
             Certificate = certificate
         });
-
-        new BucketDeployment(this, "BucketDeployment", new BucketDeploymentProps()
-        {
-            Sources = new [] { GetBucketSource(useDockerBundling, zone.ZoneName) },
-            DestinationBucket = bucket,
-            Distribution = distribution,
-        });
-
-        new ARecord(this, "ARecord", new ARecordProps()
-        {
-            RecordName = "resume",
-            Zone = zone,
-            Target = RecordTarget.FromAlias(new CloudFrontTarget(distribution))
-        });
-    }
-    
-    private ISource GetBucketSource(bool useDockerBundling, string domainName)
-    {
-        if (!useDockerBundling)
-        {
-            return Source.Asset("../FrontEnd/dist/");
-        }
-            
+        
         var bundlingOptions = new BundlingOptions()
         {
             Image = DockerImage.FromRegistry("node:lts"),
@@ -82,13 +60,28 @@ public class FrontEnd : Construct
             },
             Environment = new Dictionary<string, string>()
             {
-                { "API_DOMAIN", $"resume-api.{domainName}" }
+                { "API_DOMAIN", $"resume-api.{props.HostedZone.ZoneName}" }
             }
         };
-
-        return Source.Asset("../FrontEnd/src", new AssetOptions()
+        
+        new BucketDeployment(this, "BucketDeployment", new BucketDeploymentProps()
         {
-            Bundling = bundlingOptions
+            Sources = new [] 
+            { 
+                Source.Asset("../FrontEnd/src", new AssetOptions()
+                {
+                    Bundling = bundlingOptions
+                }) 
+            },
+            DestinationBucket = bucket,
+            Distribution = distribution,
+        });
+
+        new ARecord(this, "ARecord", new ARecordProps()
+        {
+            RecordName = "resume",
+            Zone = props.HostedZone,
+            Target = RecordTarget.FromAlias(new CloudFrontTarget(distribution))
         });
     }
 }

@@ -174,7 +174,7 @@ public class BackEnd : Construct
                 { "FRONTEND_DOMAIN",  $"resume.{props.HostedZone.ZoneName}"  }
             }
         });
-            
+        
         lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
         {
             Sid = "DynamoDBIndexAndStreamAccess",
@@ -262,34 +262,6 @@ public class BackEnd : Construct
             RecordName = "resume-api",
             Zone = props.HostedZone,
             Target = RecordTarget.FromAlias(new ApiGateway(api))
-        });
-    }
-    
-    private Code GetFunctionCode(bool useDockerBundling)
-    {
-        if (!useDockerBundling)
-        {
-            return Code.FromAsset("../BackEnd/dist/function.zip");
-        }
-            
-        var bundlingOptions = new BundlingOptions()
-        {
-            Image = Runtime.DOTNET_6.BundlingImage,
-            User = "root",
-            OutputType = BundlingOutput.ARCHIVED,
-            Command = new []
-            {
-                "/bin/sh",
-                "-c",
-                "dotnet tool install -g Amazon.Lambda.Tools" +
-                " && dotnet build" +
-                " && dotnet lambda package --output-package /asset-output/function.zip"
-            }
-        };
-        
-        return Code.FromAsset("../BackEnd/src/", new AssetOptions()
-        {
-            Bundling = bundlingOptions
         });
     }
 }
