@@ -14,9 +14,8 @@ using Amazon.CDK.AWS.S3.Deployment;
 using Amazon.CDK.AWS.Signer;
 using Amazon.CDK.CustomResources;
 using Constructs;
-using AssetOptions = Amazon.CDK.AWS.S3.Assets.AssetOptions;
 using Attribute = Amazon.CDK.AWS.DynamoDB.Attribute;
-using BundlingOptions = Amazon.CDK.BundlingOptions;
+
 namespace Build;
 
 public class BackEnd : Construct
@@ -61,9 +60,9 @@ public class BackEnd : Construct
         
         var bucketDeployment = new BucketDeployment(this, "BucketDeployment", new BucketDeploymentProps()
         {
-            Sources = new [] 
+            Sources = new []
             { 
-                Source.Asset("../BackEnd/dist/") 
+                Source.Asset("../BackEnd/dist/backend-function.zip") 
             },
             DestinationBucket = bucket,
             DestinationKeyPrefix = "Unsigned",
@@ -77,7 +76,7 @@ public class BackEnd : Construct
             LogRetention = RetentionDays.ONE_DAY,
             Handler = "CodeSigner::CodeSigner.Function::FunctionHandler",
             Timeout = Duration.Seconds(30),
-            Code = Code.FromAsset("../CodeSigner/dist/"),
+            Code = Code.FromAsset("../CodeSigner/dist/codesigner-function.zip"),
             Description = "CodeSignerFunction"
         });
         

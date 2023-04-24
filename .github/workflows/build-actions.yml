@@ -23,7 +23,7 @@ jobs:
           node-version: '18.15.x' 
       - name: Build, Test & Package
         run: |
-          API_DOMAIN=${GITHUB_SHA::7}-api.test.patrickdrew.com
+          export API_DOMAIN=${GITHUB_SHA::7}-api.test.patrickdrew.com
           . ./build.sh
       - name: Create SBOM
         uses: anchore/sbom-action@v0
@@ -43,5 +43,5 @@ jobs:
       - name: Smoke Test
         working-directory: ./FrontEnd/src
         run: |
-          CYPRESS_BASE_URL=https://${GITHUB_SHA::7}.test.patrickdrew.com
+          export CYPRESS_BASE_URL=https://${GITHUB_SHA::7}.test.patrickdrew.com
           npm run smokeTest
