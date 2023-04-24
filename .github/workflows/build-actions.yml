@@ -8,9 +8,6 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      API_DOMAIN: resume-api.test.patrickdrew.com
-      CYPRESS_BASE_URL: https://resume.test.patrickdrew.com
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v2
@@ -23,22 +20,11 @@ jobs:
           dotnet-version: '6.0.x'
       - uses: actions/setup-node@v3
         with:
-          node-version: '18.15.x'
-      - name: Build FrontEnd
-        working-directory: ./FrontEnd/src
+          node-version: '18.15.x' 
+      - name: Build, Test & Package
         run: |
-          npm ci
-          npm run build
-          touch out/.nojekyll
-          mkdir ../dist
-          cp -r ./out/* ../dist
-      - name: Build BackEnd
-        run: |
-          dotnet tool install -g Amazon.Lambda.Tools
-          dotnet build
-          dotnet test
-          cd ./BackEnd/src
-          dotnet lambda package --output-package ../dist/function.zip
+          API_DOMAIN=${{GITHUB_SHA::7}}-api.test.patrickdrew.com
+          . ./build.sh
       - name: Create SBOM
         uses: anchore/sbom-action@v0
         with:
@@ -53,8 +39,9 @@ jobs:
         working-directory: ./Build
         run: | 
           npm install -g aws-cdk
-          cdk deploy --require-approval never --context environment=test --context domain=patrickdrew.com
+          cdk deploy --require-approval never --context subdomain=${{GITHUB_SHA::7}} --context domain=test.patrickdrew.com
       - name: Smoke Test
         working-directory: ./FrontEnd/src
         run: |
+          CYPRESS_BASE_URL=https://${{GITHUB_SHA::7}}.test.patrickdrew.com
           npm run smokeTest

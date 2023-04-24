@@ -11,16 +11,16 @@ namespace Build
         {
             var app = new App();
 
-            var environment = app.Node.TryGetContext("environment")?.ToString()
-                ?? throw new ArgumentException("Must provide context argument for environment.");
-
-            var domainName = app.Node.TryGetContext("domain")?.ToString()
-                ?? throw new ArgumentException("Must provide context argument for domain.");
+            var subdomain = app.Node.TryGetContext("subdomain")?.ToString()
+                             ?? throw new ArgumentException("Must provide context argument for subdomain.");
+            
+            var domain = app.Node.TryGetContext("domain")?.ToString()
+                             ?? throw new ArgumentException("Must provide context argument for domain.");
 
             new CloudResumeChallengeStack(app, "CloudResumeChallengeStack", new CloudResumeChallengeStackProps()
             {
-                EnvironmentDescription = environment,
-                DomainName = domainName,
+                Subdomain = subdomain,
+                Domain = domain,
                 Env = new Amazon.CDK.Environment
                 {
                     Account = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT"),

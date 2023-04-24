@@ -23,11 +23,9 @@ public class BackEnd : Construct
 {
     public BackEnd(Construct scope, string id, BackEndProps props) : base(scope, id)
     {
-        var subdomainName = $"resume-api.{props.HostedZone.ZoneName}";
-        
         var certificate = new Certificate(this, "Certificate", new CertificateProps()
         {
-            DomainName = subdomainName,
+            DomainName = props.BackEndDomainName,
             Validation = CertificateValidation.FromDns(props.HostedZone) 
         });
         
@@ -61,29 +59,11 @@ public class BackEnd : Construct
             Versioned = true
         });
         
-        var bundlingOptions = new BundlingOptions()
-        {
-            Image = Runtime.DOTNET_6.BundlingImage,
-            User = "root",
-            OutputType = BundlingOutput.ARCHIVED,
-            Command = new []
-            {
-                "/bin/sh",
-                "-c",
-                "dotnet tool install -g Amazon.Lambda.Tools" +
-                " && dotnet build" +
-                " && dotnet lambda package --output-package /asset-output/function.zip"
-            }
-        };
-        
         var bucketDeployment = new BucketDeployment(this, "BucketDeployment", new BucketDeploymentProps()
         {
             Sources = new [] 
             { 
-                Source.Asset("../BackEnd/src", new AssetOptions()
-                {
-                    Bundling = bundlingOptions
-                }) 
+                Source.Asset("../BackEnd/dist/") 
             },
             DestinationBucket = bucket,
             DestinationKeyPrefix = "Unsigned",
@@ -97,10 +77,7 @@ public class BackEnd : Construct
             LogRetention = RetentionDays.ONE_DAY,
             Handler = "CodeSigner::CodeSigner.Function::FunctionHandler",
             Timeout = Duration.Seconds(30),
-            Code = Code.FromAsset("../CodeSigner/src/", new AssetOptions()
-            {
-                Bundling = bundlingOptions
-            }),
+            Code = Code.FromAsset("../CodeSigner/dist/"),
             Description = "CodeSignerFunction"
         });
         
@@ -156,9 +133,7 @@ public class BackEnd : Construct
 
         var signedObjectKey = codeSignerResource.GetAttString("Key");
 
-        new CfnOutput(this, "SignedObjectKey", new CfnOutputProps() { Value = signedObjectKey });
-        
-        var lambdaFunction = new Function(this, "LambdaFunction", new FunctionProps()
+        var lambdaFunction = new Function(this, "ApiFunction", new FunctionProps()
         {
             Runtime = Runtime.DOTNET_6,
             MemorySize = 256,
@@ -167,11 +142,11 @@ public class BackEnd : Construct
             Timeout = Duration.Seconds(30),
             Code = Code.FromBucket(bucket, signedObjectKey),
             CodeSigningConfig = signingConfig,
-            Description = "ViewStatisticsFunction",
-            Environment = new Dictionary<string, string>()
+            Description = "ApiFunction",
+            Environment = new Dictionary<string, string>
             {
                 { "DYNAMODB_TABLE", table.TableName },
-                { "FRONTEND_DOMAIN",  $"resume.{props.HostedZone.ZoneName}"  }
+                { "FRONTEND_DOMAIN",  props.FrontEndDomainName }
             }
         });
         
@@ -239,7 +214,7 @@ public class BackEnd : Construct
            Proxy = true,
            DomainName = new DomainNameOptions()
            {
-               DomainName = subdomainName,
+               DomainName = props.BackEndDomainName,
                Certificate = certificate
            },
            DeployOptions = new StageOptions()
@@ -259,9 +234,11 @@ public class BackEnd : Construct
         
         new ARecord(this, "ARecord", new ARecordProps()
         {
-            RecordName = "resume-api",
+            RecordName = props.BackEndRecordName,
             Zone = props.HostedZone,
             Target = RecordTarget.FromAlias(new ApiGateway(api))
         });
+        
+        new CfnOutput(this, "Url", new CfnOutputProps() { Value = $"https://{props.BackEndDomainName}" });
     }
 }

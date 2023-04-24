@@ -7,8 +7,8 @@ dotnet test
 
 # Bundle Lambdas
 
-dotnet lambda package --project-location ./BackEnd/src --output-package ./BackEnd/dist/function.zip
-dotnet lambda package --project-location ./CodeSigner/src --output-package ./CodeSigner/dist/function.zip
+dotnet lambda package --project-location ./BackEnd/src --output-package ./BackEnd/dist/backend-function.zip
+dotnet lambda package --project-location ./CodeSigner/src --output-package ./CodeSigner/dist/codesigner-function.zip
 
 # Build FrontEnd
 
