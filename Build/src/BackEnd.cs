@@ -30,7 +30,6 @@ public class BackEnd : Construct
         
         var table = new Table(this, "DynamoTable", new TableProps()
         {
-            TableName = "CloudResumeChallengeDatabase",
             PartitionKey = new Attribute()
             {
                 Name = "pk",

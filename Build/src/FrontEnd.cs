@@ -54,7 +54,7 @@ public class FrontEnd : Construct
 
         new ARecord(this, "ARecord", new ARecordProps()
         {
-            RecordName = "resume",
+            RecordName = props.Subdomain,
             Zone = props.HostedZone,
             Target = RecordTarget.FromAlias(new CloudFrontTarget(distribution))
         });
