@@ -6,7 +6,7 @@ dotnet build
 dotnet test
 
 # Bundle Lambdas
-
+dotnet tool install -g Amazon.Lambda.Tools
 dotnet lambda package --project-location ./BackEnd/src --output-package ./BackEnd/dist/backend-function.zip
 dotnet lambda package --project-location ./CodeSigner/src --output-package ./CodeSigner/dist/codesigner-function.zip
 
