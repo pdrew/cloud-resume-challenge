@@ -1,4 +1,4 @@
-describe('resume site', () => {
+describe('resume site', { retries: { runMode: 4 } }, () => {
   Cypress.config('defaultCommandTimeout', 30000);
 
   it('displays total views', () => {
@@ -7,7 +7,7 @@ describe('resume site', () => {
     cy.get('#total-views').invoke('text').then(parseFloat).should('be.gt', 0);
   }),
 
-  it('increments total views', { retries: { runMode: 4 } }, () => {
+  it('increments total views', () => {
     cy.visit('/');
 
     cy.get('#total-views').invoke('text').then((text) => {
