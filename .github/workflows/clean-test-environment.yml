@@ -26,7 +26,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18.15.x' 
-      - name: Echo commit sha
+      - name: Destroy CDK
+        working-directory: ./Build
         run: |
           npm install -g aws-cdk
           UPPER_SHA=$(echo $COMMIT_SHA | tr '[:lower:]' '[:upper:]' | cut -c 1-7)
