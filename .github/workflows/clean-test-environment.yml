@@ -1,0 +1,32 @@
+name: CleanUp
+on: 
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  clean-test-environment:
+    runs-on: ubuntu-latest
+    env:
+      COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::428421847827:role/GitHubActionsRole
+          role-session-name: GithubActions
+          aws-region: us-east-1
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.15.x' 
+      - name: Echo commit sha
+        run: |
+          echo ${COMMIT_SHA::7}
+          echo $COMMIT_SHA | tr '[:lower:]' '[:upper:]' | cut -c 1-7
