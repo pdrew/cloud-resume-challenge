@@ -37,7 +37,7 @@ jobs:
         working-directory: ./Build
         run: | 
           npm install -g aws-cdk
-          cdk deploy --require-approval never --context environment=test --context subdomain=resume --context domain=patrickdrew.com
+          cdk deploy --require-approval never --context environment=prod --context subdomain=resume --context domain=patrickdrew.com
       - name: Smoke Test
         working-directory: ./FrontEnd/src
         run: |
