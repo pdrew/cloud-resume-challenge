@@ -1,18 +1,23 @@
-name: build-actions
+name: deploy-to-prod
 on: 
-  push:
-    branches: [ "main" ]
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
 permissions:
   id-token: write
   contents: read
 jobs:
-  build-and-deploy:
+  deploy-to-prod:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::428421847827:role/GitHubActionsRole
+          role-to-assume: arn:aws:iam::194453828363:role/GitHubActionsRole
           role-session-name: GithubActions
           aws-region: us-east-1
       - uses: actions/setup-dotnet@v3
@@ -23,7 +28,7 @@ jobs:
           node-version: '18.15.x' 
       - name: Build, Test & Package
         run: |
-          export API_DOMAIN=${GITHUB_SHA::7}-api.test.patrickdrew.com
+          export API_DOMAIN=resume-api.patrickdrew.com
           . ./build.sh
       - name: Create SBOM
         uses: anchore/sbom-action@v0
@@ -31,17 +36,13 @@ jobs:
           format: spdx-json
           artifact-name: cloud-resume-challenge-sbom.spdx.json
           output-file: cloud-resume-challenge-sbom.spdx.json
-      - name: Scan SBOM
-        uses: anchore/scan-action@v3
-        with:
-          sbom: cloud-resume-challenge-sbom.spdx.json
       - name: Deploy
         working-directory: ./Build
         run: | 
           npm install -g aws-cdk
-          cdk deploy --require-approval never --context environment=test --context subdomain=${GITHUB_SHA::7} --context domain=test.patrickdrew.com
+          cdk deploy --require-approval never --context environment=test --context subdomain=resume --context domain=patrickdrew.com
       - name: Smoke Test
         working-directory: ./FrontEnd/src
         run: |
-          export CYPRESS_BASE_URL=https://${GITHUB_SHA::7}.test.patrickdrew.com
+          export CYPRESS_BASE_URL=https://resume.patrickdrew.com
           npm run smokeTest

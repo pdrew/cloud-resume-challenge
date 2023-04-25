@@ -1,0 +1,48 @@
+name: build-and-deploy-to-test
+on: 
+  pull_request:
+    branches:
+      - main
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::428421847827:role/GitHubActionsRole
+          role-session-name: GithubActions
+          aws-region: us-east-1
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.15.x' 
+      - name: Build, Test & Package
+        run: |
+          export API_DOMAIN=${GITHUB_SHA::7}-api.test.patrickdrew.com
+          . ./build.sh
+      - name: Create SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          format: spdx-json
+          artifact-name: cloud-resume-challenge-sbom.spdx.json
+          output-file: cloud-resume-challenge-sbom.spdx.json
+      - name: Scan SBOM
+        uses: anchore/scan-action@v3
+        with:
+          sbom: cloud-resume-challenge-sbom.spdx.json
+      - name: Deploy
+        working-directory: ./Build
+        run: | 
+          npm install -g aws-cdk
+          cdk deploy --require-approval never --context environment=test --context subdomain=${GITHUB_SHA::7} --context domain=test.patrickdrew.com
+      - name: Smoke Test
+        working-directory: ./FrontEnd/src
+        run: |
+          export CYPRESS_BASE_URL=https://${GITHUB_SHA::7}.test.patrickdrew.com
+          npm run smokeTest

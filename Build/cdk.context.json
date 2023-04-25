@@ -1,0 +1,10 @@
+{
+  "hosted-zone:account=428421847827:domainName=test.patrickdrew.com:region=us-east-1": {
+    "Id": "/hostedzone/Z009478630DIT969OJLRB",
+    "Name": "test.patrickdrew.com."
+  },
+  "hosted-zone:account=194453828363:domainName=patrickdrew.com:region=us-east-1": {
+    "Id": "/hostedzone/Z039785230AX384FYKMKH",
+    "Name": "patrickdrew.com."
+  }
+}
