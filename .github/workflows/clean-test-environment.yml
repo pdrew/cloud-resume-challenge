@@ -28,5 +28,6 @@ jobs:
           node-version: '18.15.x' 
       - name: Echo commit sha
         run: |
-          echo ${COMMIT_SHA::7}
-          echo $COMMIT_SHA | tr '[:lower:]' '[:upper:]' | cut -c 1-7
+          npm install -g aws-cdk
+          UPPER_SHA=$(echo $COMMIT_SHA | tr '[:lower:]' '[:upper:]' | cut -c 1-7)
+          cdk destroy CloudResumeChallengeStack${UPPER_SHA} --force --context environment=test --context subdomain=${COMMIT_SHA::7} --context domain=test.patrickdrew.com
