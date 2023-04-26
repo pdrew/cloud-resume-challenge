@@ -14,21 +14,12 @@ jobs:
     env:
       COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
     steps:
-      - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::428421847827:role/GitHubActionsRole
           role-session-name: GithubActions
-          aws-region: us-east-1
-      - uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18.15.x' 
-      - name: Destroy CDK
-        working-directory: ./Build
+          aws-region: us-east-1           
+      - name: Delete CFN Stack
         run: |
-          npm install -g aws-cdk
           UPPER_SHA=$(echo $COMMIT_SHA | tr '[:lower:]' '[:upper:]' | cut -c 1-7)
-          cdk destroy CloudResumeChallengeStack${UPPER_SHA} --force --context environment=test --context subdomain=${COMMIT_SHA::7} --context domain=test.patrickdrew.com
+          . ./delete-stack.sh CloudResumeChallengeStack${UPPER_SHA}
