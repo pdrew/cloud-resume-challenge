@@ -22,4 +22,4 @@ jobs:
       - name: Delete CFN Stack
         run: |
           UPPER_SHA=$(echo $COMMIT_SHA | tr '[:lower:]' '[:upper:]' | cut -c 1-7)
-          . ./delete-stack.sh CloudResumeChallengeStack${UPPER_SHA}
+          aws cloudformation delete-stack --stack-name CloudResumeChallengeStack${UPPER_SHA}
