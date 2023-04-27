@@ -11,9 +11,10 @@ permissions:
 jobs:
   clean-test-environment:
     runs-on: ubuntu-latest
-    env:
-      COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
     steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::428421847827:role/GitHubActionsRole
@@ -21,5 +22,6 @@ jobs:
           aws-region: us-east-1           
       - name: Delete CFN Stack
         run: |
-          UPPER_SHA=$(echo $COMMIT_SHA | tr '[:lower:]' '[:upper:]' | cut -c 1-7)
+          FIRST_COMMIT_SHA=$(git rev-list --max-parents=0 HEAD)
+          UPPER_SHA=$(echo $FIRST_COMMIT_SHA | tr '[:lower:]' '[:upper:]' | cut -c 1-7)
           aws cloudformation delete-stack --stack-name CloudResumeChallengeStack${UPPER_SHA}
