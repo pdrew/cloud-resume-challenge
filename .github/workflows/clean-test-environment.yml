@@ -22,6 +22,6 @@ jobs:
           aws-region: us-east-1           
       - name: Delete CFN Stack
         run: |
-          FIRST_COMMIT_SHA=$(git rev-list --max-parents=0 HEAD)
+          FIRST_COMMIT_SHA=$(git rev-list origin..HEAD | tail -1)
           UPPER_SHA=$(echo $FIRST_COMMIT_SHA | tr '[:lower:]' '[:upper:]' | cut -c 1-7)
           aws cloudformation delete-stack --stack-name CloudResumeChallengeStack${UPPER_SHA}

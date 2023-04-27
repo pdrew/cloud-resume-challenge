@@ -27,7 +27,7 @@ jobs:
           node-version: '18.15.x' 
       - name: Get First Commit SHA
         run: |
-          echo "FIRST_COMMIT_SHA=$(git rev-list --max-parents=0 HEAD)" >> $GITHUB_ENV
+          echo "FIRST_COMMIT_SHA=$(git rev-list origin..HEAD | tail -1)" >> $GITHUB_ENV
       - name: Build, Test & Package
         run: |
           export API_DOMAIN=${FIRST_COMMIT_SHA::7}-api.test.patrickdrew.com
