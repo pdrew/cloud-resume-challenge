@@ -38,7 +38,7 @@ namespace Build
                 };
 
             var stackId =
-                $"CloudResumeChallengeStack{(environment.Equals("prod", StringComparison.CurrentCultureIgnoreCase) ? string.Empty : subdomain.ToUpper())}"; 
+                $"CloudResumeChallengeStack{(environment.Equals("prod", StringComparison.CurrentCultureIgnoreCase) ? string.Empty : subdomain.Replace("pullrequest", "PR"))}"; 
             
             new CloudResumeChallengeStack(app, stackId, new CloudResumeChallengeStackProps()
             {

@@ -10,6 +10,8 @@ jobs:
   build-and-deploy-to-test:
     runs-on: ubuntu-latest
     environment: test
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number }}
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v2
@@ -23,15 +25,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18.15.x' 
-      - name: Get First Commit SHA
-        run: |
-          echo "FIRST_COMMIT_SHA=$(git rev-list origin/main..HEAD | tail -1)" >> $GITHUB_ENV
-      - name: Echo First Commit SHA
-        run: |
-          echo $FIRST_COMMIT_SHA
       - name: Build, Test & Package
         run: |
-          export API_DOMAIN=${FIRST_COMMIT_SHA::7}-api.test.patrickdrew.com
+          export API_DOMAIN=pullrequest${PR_NUMBER}-api.test.patrickdrew.com
           . ./build.sh
       - name: Create SBOM
         uses: anchore/sbom-action@v0
@@ -47,9 +43,9 @@ jobs:
         working-directory: ./Build
         run: | 
           npm install -g aws-cdk
-          cdk deploy --require-approval never --context environment=test --context subdomain=${FIRST_COMMIT_SHA::7} --context domain=test.patrickdrew.com
+          cdk deploy --require-approval never --context environment=test --context subdomain=pullrequest${PR_NUMBER} --context domain=test.patrickdrew.com
       - name: Smoke Test
         working-directory: ./FrontEnd/src
         run: |
-          export CYPRESS_BASE_URL=https://${FIRST_COMMIT_SHA::7}.test.patrickdrew.com
+          export CYPRESS_BASE_URL=https://pullrequest${PR_NUMBER}.test.patrickdrew.com
           npm run smokeTest
