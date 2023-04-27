@@ -27,7 +27,7 @@ jobs:
           node-version: '18.15.x' 
       - name: Get First Commit SHA
         run: |
-          echo "FIRST_COMMIT_SHA=$(git rev-list main..HEAD | tail -1)" >> $GITHUB_ENV
+          echo "FIRST_COMMIT_SHA=$(git rev-list origin/main..HEAD | tail -1)" >> $GITHUB_ENV
       - name: Echo First Commit SHA
         run: |
           echo $FIRST_COMMIT_SHA
