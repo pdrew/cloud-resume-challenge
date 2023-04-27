@@ -12,7 +12,7 @@ jobs:
   clean-test-environment:
     runs-on: ubuntu-latest
     env:
-      COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
     steps:
       - uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -21,5 +21,4 @@ jobs:
           aws-region: us-east-1           
       - name: Delete CFN Stack
         run: |
-          UPPER_SHA=$(echo $COMMIT_SHA | tr '[:lower:]' '[:upper:]' | cut -c 1-7)
-          aws cloudformation delete-stack --stack-name CloudResumeChallengeStack${UPPER_SHA}
+          aws cloudformation delete-stack --stack-name CloudResumeChallengeStackPR${PR_NUMBER}
