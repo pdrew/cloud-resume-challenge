@@ -11,8 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: Echo commit sha
-        run: echo ${COMMIT_SHA::7}
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v2
         with:
