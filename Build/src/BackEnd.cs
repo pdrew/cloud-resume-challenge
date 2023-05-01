@@ -242,25 +242,57 @@ public class BackEnd : Construct
         });
         
         new CfnOutput(this, "Url", new CfnOutputProps() { Value = $"https://{props.BackEndDomainName}" });
-
+        
         var topic = new Topic(this, "Topic");
 
         topic.AddSubscription(new EmailSubscription("patrick.r.drew+crc-alarms@gmail.com"));
         
-        var metricErrors = lambdaFunction.MetricErrors(new MetricOptions()
-        {
-            Statistic = "Sum",
-            Period = Duration.Minutes(1)
-        });
-
-        var alarm = new Alarm(this, "ErrorAlarm", new AlarmProps()
-        {
-            ComparisonOperator = ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-            Threshold = 1,
-            Metric = metricErrors,
-            EvaluationPeriods = 1
-        });
+        api.MetricLatency(new MetricOptions()
+            {
+                Statistic = "Average",
+                Period = Duration.Minutes(1)
+            })
+            .CreateAlarm(this, "ApiLatencyAlarm", new CreateAlarmOptions()
+            {
+                Threshold = 500,
+                EvaluationPeriods = 1
+            })
+            .AddAlarmAction(new SnsAction(topic));
         
-        alarm.AddAlarmAction(new SnsAction(topic));
+        api.MetricCount(new MetricOptions()
+            {
+                Statistic = "Sum",
+                Period = Duration.Minutes(1)
+            })
+            .CreateAlarm(this, "ApiCountAlarm", new CreateAlarmOptions()
+            {
+                Threshold = 100,
+                EvaluationPeriods = 1
+            })
+            .AddAlarmAction(new SnsAction(topic));
+        
+        api.MetricServerError(new MetricOptions()
+            {
+                Statistic = "Sum",
+                Period = Duration.Minutes(1)
+            })
+            .CreateAlarm(this, "ApiServerErrorAlarm", new CreateAlarmOptions()
+            {
+                Threshold = 1,
+                EvaluationPeriods = 1
+            })
+            .AddAlarmAction(new SnsAction(topic));
+        
+        lambdaFunction.MetricErrors(new MetricOptions()
+            {
+                Statistic = "Sum",
+                Period = Duration.Minutes(1)
+            })
+            .CreateAlarm(this, "ApiFunctionErrorAlarm", new CreateAlarmOptions()
+            {
+                Threshold = 1,
+                EvaluationPeriods = 1
+            })
+            .AddAlarmAction(new SnsAction(topic));
     }
 }
