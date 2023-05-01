@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.CertificateManager;
+using Amazon.CDK.AWS.CloudWatch;
+using Amazon.CDK.AWS.CloudWatch.Actions;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
@@ -12,6 +14,8 @@ using Amazon.CDK.AWS.Route53.Targets;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.S3.Deployment;
 using Amazon.CDK.AWS.Signer;
+using Amazon.CDK.AWS.SNS;
+using Amazon.CDK.AWS.SNS.Subscriptions;
 using Amazon.CDK.CustomResources;
 using Constructs;
 using Attribute = Amazon.CDK.AWS.DynamoDB.Attribute;
@@ -238,5 +242,25 @@ public class BackEnd : Construct
         });
         
         new CfnOutput(this, "Url", new CfnOutputProps() { Value = $"https://{props.BackEndDomainName}" });
+
+        var topic = new Topic(this, "Topic");
+
+        topic.AddSubscription(new EmailSubscription("patrick.r.drew+crc-alarms@gmail.com"));
+        
+        var metricErrors = lambdaFunction.MetricErrors(new MetricOptions()
+        {
+            Statistic = "Sum",
+            Period = Duration.Minutes(1)
+        });
+
+        var alarm = new Alarm(this, "ErrorAlarm", new AlarmProps()
+        {
+            ComparisonOperator = ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+            Threshold = 1,
+            Metric = metricErrors,
+            EvaluationPeriods = 1
+        });
+        
+        alarm.AddAlarmAction(new SnsAction(topic));
     }
 }

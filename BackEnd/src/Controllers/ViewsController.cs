@@ -22,6 +22,11 @@ public class ViewsController : ControllerBase
     {
         var statistics = await db.LoadAsync<ViewStatistics>(nameof(ViewStatistics)) ?? new ViewStatistics();
 
+        if (statistics.Total >= 20 && statistics.Total % 2 == 0)
+        {
+            throw new ApplicationException("Ruh roh");
+        }
+        
         return statistics;
     }
 
