@@ -191,6 +191,8 @@ public class BackEnd : Construct
 
         topic.AddSubscription(new EmailSubscription("patrick.r.drew+crc-alarms@gmail.com"));
         
-        api.AddApiAlarms(this, topic);
+        api.AddAlarms(this, topic);
+        
+        lambdaFunction.AddAlarms(this, topic);
     }
 }

@@ -73,7 +73,7 @@ public static class BackEndExtensions
         }));
     }
 
-    public static void AddApiAlarms(this LambdaRestApi api, Construct scope, Topic topic)
+    public static void AddAlarms(this LambdaRestApi api, Construct scope, Topic topic)
     {
         api.MetricLatency(new MetricOptions()
             {
@@ -107,6 +107,22 @@ public static class BackEndExtensions
                 Period = Duration.Minutes(5)
             })
             .CreateAlarm(scope, "ApiServerErrorAlarm", new CreateAlarmOptions()
+            {
+                ComparisonOperator = ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+                Threshold = 1,
+                EvaluationPeriods = 1
+            })
+            .AddAlarmAction(new SnsAction(topic));
+    }
+
+    public static void AddAlarms(this Function function, Construct scope, Topic topic)
+    {
+        function.MetricThrottles(new MetricOptions()
+            {
+                Statistic = "Sum",
+                Period = Duration.Minutes(5)
+            })
+            .CreateAlarm(scope, "ApiFunctionThrottleAlarm", new CreateAlarmOptions()
             {
                 ComparisonOperator = ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
                 Threshold = 1,
