@@ -152,63 +152,7 @@ public class BackEnd : Construct
             }
         });
         
-        lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
-        {
-            Sid = "DynamoDBIndexAndStreamAccess",
-            Effect = Effect.ALLOW,
-            Actions = new []
-            {
-                "dynamodb:GetShardIterator",
-                "dynamodb:Scan",
-                "dynamodb:Query",
-                "dynamodb:DescribeStream",
-                "dynamodb:GetRecords",
-                "dynamodb:ListStreams"
-            },
-            Resources = new []
-            {
-                table.TableArn,
-                $"{table.TableArn}/stream/*"
-            }
-        }));
-            
-        lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
-        {
-            Sid = "DynamoDBTableAccess",
-            Effect = Effect.ALLOW,
-            Actions = new []
-            {
-                "dynamodb:BatchGetItem",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:PutItem",
-                "dynamodb:DescribeTable",
-                "dynamodb:DeleteItem",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:Query",
-                "dynamodb:UpdateItem"
-            },
-            Resources = new []
-            {
-                table.TableArn
-            }
-        }));
-            
-        lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
-        {
-            Sid = "DynamoDBDescribeLimitsAccess",
-            Effect = Effect.ALLOW,
-            Actions = new []
-            {
-                "dynamodb:DescribeLimits"
-            },
-            Resources = new []
-            {
-                table.TableArn,
-                $"{table.TableArn}/stream/*"
-            }
-        }));
+        lambdaFunction.AddDynamoPolicies(table);
             
         var api = new LambdaRestApi(this, "Api", new LambdaRestApiProps()
         {
@@ -247,52 +191,6 @@ public class BackEnd : Construct
 
         topic.AddSubscription(new EmailSubscription("patrick.r.drew+crc-alarms@gmail.com"));
         
-        api.MetricLatency(new MetricOptions()
-            {
-                Statistic = "Average",
-                Period = Duration.Minutes(1)
-            })
-            .CreateAlarm(this, "ApiLatencyAlarm", new CreateAlarmOptions()
-            {
-                Threshold = 500,
-                EvaluationPeriods = 1
-            })
-            .AddAlarmAction(new SnsAction(topic));
-        
-        api.MetricCount(new MetricOptions()
-            {
-                Statistic = "Sum",
-                Period = Duration.Minutes(1)
-            })
-            .CreateAlarm(this, "ApiCountAlarm", new CreateAlarmOptions()
-            {
-                Threshold = 100,
-                EvaluationPeriods = 1
-            })
-            .AddAlarmAction(new SnsAction(topic));
-        
-        api.MetricServerError(new MetricOptions()
-            {
-                Statistic = "Sum",
-                Period = Duration.Minutes(1)
-            })
-            .CreateAlarm(this, "ApiServerErrorAlarm", new CreateAlarmOptions()
-            {
-                Threshold = 1,
-                EvaluationPeriods = 1
-            })
-            .AddAlarmAction(new SnsAction(topic));
-        
-        lambdaFunction.MetricErrors(new MetricOptions()
-            {
-                Statistic = "Sum",
-                Period = Duration.Minutes(1)
-            })
-            .CreateAlarm(this, "ApiFunctionErrorAlarm", new CreateAlarmOptions()
-            {
-                Threshold = 1,
-                EvaluationPeriods = 1
-            })
-            .AddAlarmAction(new SnsAction(topic));
+        api.AddApiAlarms(this, topic);
     }
 }
