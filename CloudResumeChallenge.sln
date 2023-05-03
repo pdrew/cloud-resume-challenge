@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSigner.Tests", "Helpers
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSigner", "Helpers\CodeSigner\src\CodeSigner.csproj", "{0248087E-4EA5-4F6A-B677-968C04526B5B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlackNotifier", "Helpers\SlackNotifier\src\SlackNotifier.csproj", "{54F89482-4CAF-4CBD-A3E7-87983751C439}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{0248087E-4EA5-4F6A-B677-968C04526B5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0248087E-4EA5-4F6A-B677-968C04526B5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0248087E-4EA5-4F6A-B677-968C04526B5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54F89482-4CAF-4CBD-A3E7-87983751C439}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54F89482-4CAF-4CBD-A3E7-87983751C439}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54F89482-4CAF-4CBD-A3E7-87983751C439}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54F89482-4CAF-4CBD-A3E7-87983751C439}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D9C66131-471C-4FA5-9F24-84388E57408B} = {0EAB3363-8357-44E5-A5DD-DFB1D6CBCD58}
