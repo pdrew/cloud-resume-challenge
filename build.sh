@@ -9,7 +9,7 @@ dotnet test
 dotnet tool install -g Amazon.Lambda.Tools
 dotnet lambda package --project-location ./BackEnd/src --output-package ./BackEnd/dist/backend-function.zip
 dotnet lambda package --project-location ./Helpers/CodeSigner/src --output-package ./Helpers/CodeSigner/dist/codesigner-function.zip
-dotnet lambda package --project-location ./Helpers/SlackNotifier/src --output-package ./Helpers/CodeSigner/dist/codesigner-function.zip
+dotnet lambda package --project-location ./Helpers/SlackNotifier/src --output-package ./Helpers/SlackNotifier/dist/slacknotifier-function.zip
 
 # Build FrontEnd
 
