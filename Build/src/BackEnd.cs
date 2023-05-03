@@ -70,69 +70,13 @@ public class BackEnd : Construct
             Extract = false
         });
 
-        var codeSignerFunction = new Function(this, "CodeSignerFunction", new FunctionProps()
+        var codeSigner = new CodeSigner(this, "CodeSigner", new CodeSignerProps()
         {
-            Runtime = Runtime.DOTNET_6,
-            MemorySize = 256,
-            LogRetention = RetentionDays.ONE_DAY,
-            Handler = "CodeSigner::CodeSigner.Function::FunctionHandler",
-            Timeout = Duration.Seconds(30),
-            Code = Code.FromAsset("../Helpers/CodeSigner/dist/codesigner-function.zip"),
-            Description = "CodeSignerFunction"
+            Bucket = bucket,
+            BucketDeployment = bucketDeployment,
+            SigningProfile = signingProfile
         });
         
-        codeSignerFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
-        {
-            Sid = "SignerAccess",
-            Effect = Effect.ALLOW,
-            Actions = new []
-            {
-                "signer:StartSigningJob",
-                "signer:DescribeSigningJob"
-            },
-            Resources = new []
-            {
-                "*"
-            }
-        }));
-        
-        codeSignerFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
-        {
-            Sid = "S3ObjectVersionAccess",
-            Effect = Effect.ALLOW,
-            Actions = new []
-            {
-                "s3:ListBucketVersions",
-                "s3:GetObjectVersion",
-                "s3:PutObject",
-                "s3:ListBucket"
-            },
-            Resources = new []
-            {
-                bucket.BucketArn,
-                $"{bucket.BucketArn}/*"
-            }
-        }));
-
-        var codeSignerProvider = new Provider(this, "CodeSignerProvider", new ProviderProps()
-        {
-            OnEventHandler = codeSignerFunction
-        });
-        
-        var codeSignerResource = new CustomResource(this, "CodeSignerResource", new CustomResourceProps()
-        {
-            ServiceToken = codeSignerProvider.ServiceToken,
-            Properties = new Dictionary<string, object>()
-            {
-                { "ProfileName", signingProfile.SigningProfileName },
-                { "BucketName", bucket.BucketName },
-                { "ObjectKey", $"Unsigned/{Fn.Select(0, bucketDeployment.ObjectKeys)}" },                
-                { "TimeStamp", DateTimeOffset.Now.ToUnixTimeSeconds() },
-            },
-        });
-
-        var signedObjectKey = codeSignerResource.GetAttString("Key");
-
         var lambdaFunction = new Function(this, "ApiFunction", new FunctionProps()
         {
             Runtime = Runtime.DOTNET_6,
@@ -140,7 +84,7 @@ public class BackEnd : Construct
             LogRetention = RetentionDays.ONE_DAY,
             Handler = "BackEnd",
             Timeout = Duration.Seconds(30),
-            Code = Code.FromBucket(bucket, signedObjectKey),
+            Code = Code.FromBucket(bucket, codeSigner.SignedObjecKey),
             CodeSigningConfig = signingConfig,
             Description = "ApiFunction",
             Environment = new Dictionary<string, string>
