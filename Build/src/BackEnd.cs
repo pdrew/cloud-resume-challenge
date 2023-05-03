@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.CertificateManager;
-using Amazon.CDK.AWS.CloudWatch;
-using Amazon.CDK.AWS.CloudWatch.Actions;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
@@ -79,7 +77,7 @@ public class BackEnd : Construct
             LogRetention = RetentionDays.ONE_DAY,
             Handler = "CodeSigner::CodeSigner.Function::FunctionHandler",
             Timeout = Duration.Seconds(30),
-            Code = Code.FromAsset("../CodeSigner/dist/codesigner-function.zip"),
+            Code = Code.FromAsset("../Helpers/CodeSigner/dist/codesigner-function.zip"),
             Description = "CodeSignerFunction"
         });
         
