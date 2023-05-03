@@ -136,5 +136,7 @@ public class BackEnd : Construct
         api.AddAlarms(this, topic);
         
         lambdaFunction.AddAlarms(this, topic);
+
+        new SlackNotifier(this, "SlackNotifier", topic);
     }
 }
