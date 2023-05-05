@@ -76,7 +76,8 @@ public class BackEnd : Construct
         {
             Bucket = bucket,
             BucketDeployment = bucketDeployment,
-            SigningProfile = signingProfile
+            SigningProfile = signingProfile,
+            Env = props.Env
         });
         
         var lambdaFunction = new Function(this, "ApiFunction", new FunctionProps()
@@ -142,7 +143,8 @@ public class BackEnd : Construct
         new SlackNotifier(this, "SlackNotifier", new SlackNotifierProps()
         {
             Topic = topic,
-            SlackUrl = props.SlackUrl
+            SlackUrl = props.SlackUrl,
+            Env = props.Env
         });
     }
 }

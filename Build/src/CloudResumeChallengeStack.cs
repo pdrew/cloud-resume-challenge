@@ -16,14 +16,16 @@ namespace Build
             new FrontEnd(this, "CloudResumeChallengeFrontEnd", new FrontEndProps()
             {
                 Subdomain = props.Subdomain,
-                HostedZone = zone
+                HostedZone = zone,
+                Env = props.Env
             });
             
             new BackEnd(this, "CloudResumeChallengeBackEnd", new BackEndProps()
             {
                 Subdomain = props.Subdomain,
                 HostedZone = zone,
-                SlackUrl = props.SlackUrl
+                SlackUrl = props.SlackUrl,
+                Env = props.Env
             });
             
             
