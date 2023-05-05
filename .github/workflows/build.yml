@@ -43,7 +43,13 @@ jobs:
         working-directory: ./Build
         run: | 
           npm install -g aws-cdk
-          cdk deploy --require-approval never --context environment=test --context subdomain=pullrequest${PR_NUMBER} --context domain=test.patrickdrew.com
+          cdk deploy --require-approval never \
+          --context environment=test \
+          --context subdomain=pullrequest${PR_NUMBER} \
+          --context domain=test.patrickdrew.com \
+          --context slackUrl=${SLACK_WEBHOOK}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }} 
       - name: Smoke Test
         working-directory: ./FrontEnd/src
         run: |

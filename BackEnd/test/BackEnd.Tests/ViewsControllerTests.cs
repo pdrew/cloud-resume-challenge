@@ -1,4 +1,3 @@
-using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using BackEnd.Controllers;
 using BackEnd.Models;
@@ -30,7 +29,7 @@ public class ViewsControllerTests
     {
         dbMock
             .Setup(x => x.LoadAsync<ViewStatistics>("ViewStatistics", It.IsAny<CancellationToken>()))!
-            .ReturnsAsync((ViewStatistics)null);
+            .ReturnsAsync((ViewStatistics)null!);
 
         var sut = new ViewsController(dbMock.Object);
 
@@ -65,7 +64,7 @@ public class ViewsControllerTests
     {
         dbMock
             .Setup(x => x.LoadAsync<ViewStatistics>("ViewStatistics", It.IsAny<CancellationToken>()))!
-            .ReturnsAsync((ViewStatistics)null);
+            .ReturnsAsync((ViewStatistics)null!);
 
         dbMock
             .Setup(x => x.SaveAsync(It.IsAny<ViewStatistics>(), It.IsAny<CancellationToken>()))

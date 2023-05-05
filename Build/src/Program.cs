@@ -25,6 +25,9 @@ namespace Build
             var domain = app.Node.TryGetContext("domain")?.ToString()
                              ?? throw new ArgumentException("Must provide context argument for domain.");
 
+            var slackUrl = app.Node.TryGetContext("slackUrl")?.ToString()
+                         ?? throw new ArgumentException("Must provide context argument for slackUrl.");
+            
             var env = environment.Equals("prod", StringComparison.CurrentCultureIgnoreCase)
                 ? new Amazon.CDK.Environment
                 {
@@ -44,7 +47,8 @@ namespace Build
             {
                 Subdomain = subdomain,
                 Domain = domain,
-                Env = env
+                Env = env,
+                SlackUrl = slackUrl
             });
             
             app.Synth();

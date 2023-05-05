@@ -12,6 +12,10 @@ using Amazon.CDK.AWS.Route53.Targets;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.S3.Deployment;
 using Amazon.CDK.AWS.Signer;
+using Amazon.CDK.AWS.SNS;
+using Amazon.CDK.AWS.SNS.Subscriptions;
+using Amazon.CDK.AWS.SSM;
+using Amazon.CDK.CloudAssembly.Schema;
 using Amazon.CDK.CustomResources;
 using Constructs;
 using Attribute = Amazon.CDK.AWS.DynamoDB.Attribute;
@@ -68,69 +72,14 @@ public class BackEnd : Construct
             Extract = false
         });
 
-        var codeSignerFunction = new Function(this, "CodeSignerFunction", new FunctionProps()
+        var codeSigner = new CodeSigner(this, "CodeSigner", new CodeSignerProps()
         {
-            Runtime = Runtime.DOTNET_6,
-            MemorySize = 256,
-            LogRetention = RetentionDays.ONE_DAY,
-            Handler = "CodeSigner::CodeSigner.Function::FunctionHandler",
-            Timeout = Duration.Seconds(30),
-            Code = Code.FromAsset("../CodeSigner/dist/codesigner-function.zip"),
-            Description = "CodeSignerFunction"
+            Bucket = bucket,
+            BucketDeployment = bucketDeployment,
+            SigningProfile = signingProfile,
+            Env = props.Env
         });
         
-        codeSignerFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
-        {
-            Sid = "SignerAccess",
-            Effect = Effect.ALLOW,
-            Actions = new []
-            {
-                "signer:StartSigningJob",
-                "signer:DescribeSigningJob"
-            },
-            Resources = new []
-            {
-                "*"
-            }
-        }));
-        
-        codeSignerFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
-        {
-            Sid = "S3ObjectVersionAccess",
-            Effect = Effect.ALLOW,
-            Actions = new []
-            {
-                "s3:ListBucketVersions",
-                "s3:GetObjectVersion",
-                "s3:PutObject",
-                "s3:ListBucket"
-            },
-            Resources = new []
-            {
-                bucket.BucketArn,
-                $"{bucket.BucketArn}/*"
-            }
-        }));
-
-        var codeSignerProvider = new Provider(this, "CodeSignerProvider", new ProviderProps()
-        {
-            OnEventHandler = codeSignerFunction
-        });
-        
-        var codeSignerResource = new CustomResource(this, "CodeSignerResource", new CustomResourceProps()
-        {
-            ServiceToken = codeSignerProvider.ServiceToken,
-            Properties = new Dictionary<string, object>()
-            {
-                { "ProfileName", signingProfile.SigningProfileName },
-                { "BucketName", bucket.BucketName },
-                { "ObjectKey", $"Unsigned/{Fn.Select(0, bucketDeployment.ObjectKeys)}" },                
-                { "TimeStamp", DateTimeOffset.Now.ToUnixTimeSeconds() },
-            },
-        });
-
-        var signedObjectKey = codeSignerResource.GetAttString("Key");
-
         var lambdaFunction = new Function(this, "ApiFunction", new FunctionProps()
         {
             Runtime = Runtime.DOTNET_6,
@@ -138,7 +87,7 @@ public class BackEnd : Construct
             LogRetention = RetentionDays.ONE_DAY,
             Handler = "BackEnd",
             Timeout = Duration.Seconds(30),
-            Code = Code.FromBucket(bucket, signedObjectKey),
+            Code = Code.FromBucket(bucket, codeSigner.SignedObjecKey),
             CodeSigningConfig = signingConfig,
             Description = "ApiFunction",
             Environment = new Dictionary<string, string>
@@ -148,63 +97,7 @@ public class BackEnd : Construct
             }
         });
         
-        lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
-        {
-            Sid = "DynamoDBIndexAndStreamAccess",
-            Effect = Effect.ALLOW,
-            Actions = new []
-            {
-                "dynamodb:GetShardIterator",
-                "dynamodb:Scan",
-                "dynamodb:Query",
-                "dynamodb:DescribeStream",
-                "dynamodb:GetRecords",
-                "dynamodb:ListStreams"
-            },
-            Resources = new []
-            {
-                table.TableArn,
-                $"{table.TableArn}/stream/*"
-            }
-        }));
-            
-        lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
-        {
-            Sid = "DynamoDBTableAccess",
-            Effect = Effect.ALLOW,
-            Actions = new []
-            {
-                "dynamodb:BatchGetItem",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:PutItem",
-                "dynamodb:DescribeTable",
-                "dynamodb:DeleteItem",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:Query",
-                "dynamodb:UpdateItem"
-            },
-            Resources = new []
-            {
-                table.TableArn
-            }
-        }));
-            
-        lambdaFunction.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps()
-        {
-            Sid = "DynamoDBDescribeLimitsAccess",
-            Effect = Effect.ALLOW,
-            Actions = new []
-            {
-                "dynamodb:DescribeLimits"
-            },
-            Resources = new []
-            {
-                table.TableArn,
-                $"{table.TableArn}/stream/*"
-            }
-        }));
+        lambdaFunction.AddDynamoPolicies(table);
             
         var api = new LambdaRestApi(this, "Api", new LambdaRestApiProps()
         {
@@ -238,5 +131,21 @@ public class BackEnd : Construct
         });
         
         new CfnOutput(this, "Url", new CfnOutputProps() { Value = $"https://{props.BackEndDomainName}" });
+        
+        var topic = new Topic(this, "Topic");
+
+        topic.AddSubscription(new EmailSubscription("patrick.r.drew+crc-alarms@gmail.com"));
+        
+        api.AddAlarms(this, topic);
+        
+        lambdaFunction.AddAlarms(this, topic);
+
+        new SlackNotifier(this, "SlackNotifier", new SlackNotifierProps()
+        {
+            Topic = topic,
+            SlackUrl = props.SlackUrl,
+            Subdomain = props.Subdomain,
+            Env = props.Env
+        });
     }
 }

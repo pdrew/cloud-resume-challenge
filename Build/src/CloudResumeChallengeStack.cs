@@ -1,6 +1,4 @@
-using System;
 using Amazon.CDK;
-using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Route53;
 using Constructs;
 
@@ -10,21 +8,24 @@ namespace Build
     {
         internal CloudResumeChallengeStack(Construct scope, string id, CloudResumeChallengeStackProps props) : base(scope, id, props)
         {
-            var zone = HostedZone.FromLookup(this, "CloudResumeChallengeHostedZone", new HostedZoneProviderProps()
+            var zone = HostedZone.FromLookup(this, "HostedZone", new HostedZoneProviderProps()
             {
                 DomainName = props.Domain
             });
 
-            new FrontEnd(this, "CloudResumeChallengeFrontEnd", new FrontEndProps()
+            new FrontEnd(this, "FrontEnd", new FrontEndProps()
             {
                 Subdomain = props.Subdomain,
-                HostedZone = zone
+                HostedZone = zone,
+                Env = props.Env
             });
             
-            new BackEnd(this, "CloudResumeChallengeBackEnd", new BackEndProps()
+            new BackEnd(this, "BackEnd", new BackEndProps()
             {
                 Subdomain = props.Subdomain,
-                HostedZone = zone
+                HostedZone = zone,
+                SlackUrl = props.SlackUrl,
+                Env = props.Env
             });
             
             
