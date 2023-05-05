@@ -38,7 +38,7 @@ jobs:
         run: | 
           npm install -g aws-cdk
           cdk deploy --require-approval never \
-          --context environment=test \
+          --context environment=prod \
           --context subdomain=resume \
           --context domain=patrickdrew.com \
           --context slackUrl=${SLACK_WEBHOOK}
