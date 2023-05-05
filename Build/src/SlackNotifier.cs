@@ -41,7 +41,7 @@ public class SlackNotifier  : Construct
                 { "Overwrite",  true },
                 { "Type",  "SecureString" }
             },
-            PhysicalResourceId = PhysicalResourceId.FromResponse("Version")
+            PhysicalResourceId = PhysicalResourceId.Of($"SlackUrlParameter{scope.Node.Root.Node.Id}")
         };
         
         new AwsCustomResource(this, "SecureParameter", new AwsCustomResourceProps()
