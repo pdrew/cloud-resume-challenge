@@ -14,6 +14,8 @@ using Amazon.CDK.AWS.S3.Deployment;
 using Amazon.CDK.AWS.Signer;
 using Amazon.CDK.AWS.SNS;
 using Amazon.CDK.AWS.SNS.Subscriptions;
+using Amazon.CDK.AWS.SSM;
+using Amazon.CDK.CloudAssembly.Schema;
 using Amazon.CDK.CustomResources;
 using Constructs;
 using Attribute = Amazon.CDK.AWS.DynamoDB.Attribute;
@@ -137,6 +139,10 @@ public class BackEnd : Construct
         
         lambdaFunction.AddAlarms(this, topic);
 
-        new SlackNotifier(this, "SlackNotifier", topic);
+        new SlackNotifier(this, "SlackNotifier", new SlackNotifierProps()
+        {
+            Topic = topic,
+            SlackUrl = props.SlackUrl
+        });
     }
 }

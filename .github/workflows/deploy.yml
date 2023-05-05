@@ -33,11 +33,17 @@ jobs:
           format: spdx-json
           artifact-name: cloud-resume-challenge-sbom.spdx.json
           output-file: cloud-resume-challenge-sbom.spdx.json
-      - name: Deploy
+     - name: Deploy
         working-directory: ./Build
         run: | 
           npm install -g aws-cdk
-          cdk deploy --require-approval never --context environment=prod --context subdomain=resume --context domain=patrickdrew.com
+          cdk deploy --require-approval never \
+          --context environment=test \
+          --context subdomain=resume \
+          --context domain=patrickdrew.com \
+          --context slackUrl=${SLACK_WEBHOOK}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }} 
       - name: Smoke Test
         working-directory: ./FrontEnd/src
         run: |

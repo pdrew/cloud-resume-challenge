@@ -1,5 +1,6 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SNSEvents;
+using Amazon.SimpleSystemsManagement;
 
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
@@ -18,7 +19,7 @@ public class Function
     /// <returns></returns>
     public async Task FunctionHandler(SNSEvent @event, ILambdaContext context)
     {
-        var slackNotifier = new SlackNotifier();
+        var slackNotifier = new SlackNotifier(new AmazonSimpleSystemsManagementClient(), new SlackClient());
 
         await slackNotifier.Handle(@event, context);
     }

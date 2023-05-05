@@ -1,6 +1,4 @@
-using System;
 using Amazon.CDK;
-using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Route53;
 using Constructs;
 
@@ -24,7 +22,8 @@ namespace Build
             new BackEnd(this, "CloudResumeChallengeBackEnd", new BackEndProps()
             {
                 Subdomain = props.Subdomain,
-                HostedZone = zone
+                HostedZone = zone,
+                SlackUrl = props.SlackUrl
             });
             
             
