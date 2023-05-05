@@ -33,7 +33,7 @@ jobs:
           format: spdx-json
           artifact-name: cloud-resume-challenge-sbom.spdx.json
           output-file: cloud-resume-challenge-sbom.spdx.json
-     - name: Deploy
+      - name: Deploy
         working-directory: ./Build
         run: | 
           npm install -g aws-cdk
