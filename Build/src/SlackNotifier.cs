@@ -1,4 +1,5 @@
-﻿using Amazon.CDK;
+﻿using System.Collections.Generic;
+using Amazon.CDK;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Lambda.EventSources;
@@ -33,12 +34,12 @@ public class SlackNotifier  : Construct
         {
             Service = "SSM",
             Action = "putParameter",
-            Parameters = new
+            Parameters = new Dictionary<string, object> 
             {
-                Name = parameterName,
-                Value = props.SlackUrl,
-                Overwrite = true,
-                Type = "SecureString"
+                { "Name",  parameterName },
+                { "Value",  props.SlackUrl },
+                { "Overwrite",  "true" },
+                { "Type",  "SecureString" }
             },
             PhysicalResourceId = PhysicalResourceId.FromResponse("Version")
         };
@@ -51,9 +52,9 @@ public class SlackNotifier  : Construct
             {
                 Service = "SSM",
                 Action = "deleteParameter",
-                Parameters = new
+                Parameters = new Dictionary<string, string>
                 {
-                    Name = parameterName
+                    { "Name",  parameterName }
                 }
             },
             Policy = AwsCustomResourcePolicy.FromSdkCalls(new SdkCallsPolicyOptions()
