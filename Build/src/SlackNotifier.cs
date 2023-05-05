@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
@@ -29,6 +30,10 @@ public class SlackNotifier  : Construct
         var eventSource = new SnsEventSource(props.Topic);
         
         function.AddEventSource(eventSource);
+        
+        var resourceSuffix = props.Subdomain.Contains("pullrequest", StringComparison.CurrentCultureIgnoreCase)
+            ? props.Subdomain.Replace("pullrequest", "PR", StringComparison.CurrentCultureIgnoreCase)
+            : string.Empty;
 
         var sdkCall = new AwsSdkCall()
         {
@@ -41,7 +46,7 @@ public class SlackNotifier  : Construct
                 { "Overwrite",  true },
                 { "Type",  "SecureString" }
             },
-            PhysicalResourceId = PhysicalResourceId.Of($"SlackUrlParameter{scope.Node.Root.Node.Id}")
+            PhysicalResourceId = PhysicalResourceId.Of($"SlackUrlParameter{resourceSuffix}")
         };
         
         new AwsCustomResource(this, "SecureParameter", new AwsCustomResourceProps()

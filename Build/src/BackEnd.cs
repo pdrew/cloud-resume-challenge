@@ -144,6 +144,7 @@ public class BackEnd : Construct
         {
             Topic = topic,
             SlackUrl = props.SlackUrl,
+            Subdomain = props.Subdomain,
             Env = props.Env
         });
     }

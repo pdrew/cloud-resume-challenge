@@ -8,4 +8,6 @@ public class SlackNotifierProps : StackProps
     public Topic Topic { get; init; }
     
     public string SlackUrl { get; init; }
+    
+    public string Subdomain { get; init; }
 }
