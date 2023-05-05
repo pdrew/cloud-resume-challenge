@@ -38,7 +38,7 @@ public class SlackNotifier  : Construct
             {
                 { "Name",  parameterName },
                 { "Value",  props.SlackUrl },
-                { "Overwrite",  "true" },
+                { "Overwrite",  true },
                 { "Type",  "SecureString" }
             },
             PhysicalResourceId = PhysicalResourceId.FromResponse("Version")
