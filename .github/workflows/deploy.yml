@@ -22,7 +22,10 @@ jobs:
           dotnet-version: '6.0.x'
       - uses: actions/setup-node@v3
         with:
-          node-version: '18.15.x' 
+          node-version: '18.15.x'
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8.x'
       - name: Build, Test & Package
         run: |
           export API_DOMAIN=resume-api.patrickdrew.com
@@ -33,10 +36,27 @@ jobs:
           format: spdx-json
           artifact-name: cloud-resume-challenge-sbom.spdx.json
           output-file: cloud-resume-challenge-sbom.spdx.json
-      - name: Deploy
+      - name: CDK Synth
         working-directory: ./Build
         run: | 
           npm install -g aws-cdk
+          cdk synth --require-approval never \
+          --context environment=prod \
+          --context subdomain=resume \
+          --context domain=patrickdrew.com \
+          --context slackUrl=${SLACK_WEBHOOK}
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      - name: Validate IAM Policies
+        working-directory: ./Build/cdk.out
+        run: |
+          pip install cfn-policy-validator
+          cfn-policy-validator validate \
+          --template-path ./CloudResumeChallengeStack.template.json \
+          --region us-east-1
+      - name: CDK Deploy
+        working-directory: ./Build
+        run: |
           cdk deploy --require-approval never \
           --context environment=prod \
           --context subdomain=resume \
