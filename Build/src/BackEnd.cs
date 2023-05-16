@@ -34,11 +34,6 @@ public class BackEnd : Construct
                 Name = "pk",
                 Type = AttributeType.STRING
             },
-            SortKey = new Attribute()
-            {
-                Name = "sk",
-                Type = AttributeType.STRING
-            },
             RemovalPolicy = RemovalPolicy.DESTROY
         });
 
