@@ -14,6 +14,9 @@ public class ViewStatistics
     [JsonIgnore]
     public string PartitionKey { get; private set; }
     
-    [DynamoDBProperty("total")]
-    public int Total { get; set; }
+    [DynamoDBProperty("total_views")]
+    public int TotalViews { get; set; }
+    
+    [DynamoDBProperty("unique_visitors")]
+    public int UniqueVisitors { get; set; }
 }

@@ -10,5 +10,5 @@ export default function Counter() {
     if (error) return <p>Failed to load view statistics</p>
     if (isLoading) return <p>Fetching view statistics...</p>
 
-    return <p>This page has been viewed <span id="total-views">{data.total}</span> times.</p>
+    return <p>This page has had <span id="total-views">{data.totalViews}</span> total views by <span id="unique-visitors">{data.uniqueVisitors}</span> unique visitors.</p>
 }

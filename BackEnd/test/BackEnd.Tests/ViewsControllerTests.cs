@@ -1,6 +1,8 @@
 using Amazon.DynamoDBv2.DataModel;
 using BackEnd.Controllers;
 using BackEnd.Models;
+using BackEnd.Services;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Xunit;
 
@@ -10,18 +12,22 @@ public class ViewsControllerTests
 {
     private Mock<IDynamoDBContext> dbMock = new ();
 
+    private Mock<IClientIpAccessor> clientIpAccessorMock = new();
+
     [Fact]
     public async Task IndexReturnsCorrectResult()
     {
         dbMock
             .Setup(x => x.LoadAsync<ViewStatistics>("ViewStatistics", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ViewStatistics() { Total = 42 });
+            .ReturnsAsync(new ViewStatistics() { TotalViews = 42 });
 
-        var sut = new ViewsController(dbMock.Object);
+        clientIpAccessorMock.Setup(x => x.GetClientIp()).Returns("127.0.0.1");
+    
+        var sut = new ViewsController(dbMock.Object, clientIpAccessorMock.Object);
 
         var actual = await sut.Index();
         
-        Assert.Equal(42, actual.Total);
+        Assert.Equal(42, actual.TotalViews);
     }
     
     [Fact]
@@ -31,17 +37,19 @@ public class ViewsControllerTests
             .Setup(x => x.LoadAsync<ViewStatistics>("ViewStatistics", It.IsAny<CancellationToken>()))!
             .ReturnsAsync((ViewStatistics)null!);
 
-        var sut = new ViewsController(dbMock.Object);
+        clientIpAccessorMock.Setup(x => x.GetClientIp()).Returns("127.0.0.1");
+    
+        var sut = new ViewsController(dbMock.Object, clientIpAccessorMock.Object);
 
         var actual = await sut.Index();
         
-        Assert.Equal(0, actual.Total);
+        Assert.Equal(0, actual.TotalViews);
     }
     
     [Fact]
     public async Task IncrementReturnsCorrectResult()
     {
-        var viewStatistics = new ViewStatistics() { Total = 42 };
+        var viewStatistics = new ViewStatistics() { TotalViews = 42 };
         
         dbMock
             .Setup(x => x.LoadAsync<ViewStatistics>("ViewStatistics", It.IsAny<CancellationToken>()))
@@ -51,11 +59,13 @@ public class ViewsControllerTests
             .Setup(x => x.SaveAsync(viewStatistics, It.IsAny<CancellationToken>()))
             .Verifiable();
 
-        var sut = new ViewsController(dbMock.Object);
+        clientIpAccessorMock.Setup(x => x.GetClientIp()).Returns("127.0.0.1");
+    
+        var sut = new ViewsController(dbMock.Object, clientIpAccessorMock.Object);
 
         var actual = await sut.Increment();
         
-        Assert.Equal(43, actual.Total);
+        Assert.Equal(43, actual.TotalViews);
         dbMock.VerifyAll();
     }
     
@@ -70,11 +80,13 @@ public class ViewsControllerTests
             .Setup(x => x.SaveAsync(It.IsAny<ViewStatistics>(), It.IsAny<CancellationToken>()))
             .Verifiable();
 
-        var sut = new ViewsController(dbMock.Object);
+        clientIpAccessorMock.Setup(x => x.GetClientIp()).Returns("127.0.0.1");
+    
+        var sut = new ViewsController(dbMock.Object, clientIpAccessorMock.Object);
 
         var actual = await sut.Increment();
         
-        Assert.Equal(1, actual.Total);
+        Assert.Equal(1, actual.TotalViews);
         dbMock.VerifyAll();
     }
     

@@ -6,6 +6,7 @@ using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.Util;
 using BackEnd.Models;
+using BackEnd.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,9 +55,14 @@ else
 
 builder.Services.AddAWSService<IAmazonDynamoDB>();
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
+builder.Services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<IClientIpAccessor, ClientIpAccessor>();
 
 AWSConfigsDynamoDB.Context.AddMapping(new TypeMapping(
     typeof(ViewStatistics), Environment.GetEnvironmentVariable("DYNAMODB_TABLE")));
+
+AWSConfigsDynamoDB.Context.AddMapping(new TypeMapping(
+    typeof(Visitor), Environment.GetEnvironmentVariable("DYNAMODB_TABLE")));
 
 var app = builder.Build();
 

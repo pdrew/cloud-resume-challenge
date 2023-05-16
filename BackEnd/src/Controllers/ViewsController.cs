@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using BackEnd.Models;
+using BackEnd.Services;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +11,12 @@ namespace BackEnd.Controllers;
 public class ViewsController : ControllerBase
 {
     private readonly IDynamoDBContext db;
+    private readonly IClientIpAccessor clientIpAccessor;
 
-    public ViewsController(IDynamoDBContext db)
+    public ViewsController(IDynamoDBContext db, IClientIpAccessor clientIpAccessor)
     {
         this.db = db;
+        this.clientIpAccessor = clientIpAccessor;
     }
     
     // GET
@@ -28,10 +31,23 @@ public class ViewsController : ControllerBase
     [HttpPost]
     public async Task<ViewStatistics> Increment()
     {
+        var clientIp = clientIpAccessor.GetClientIp();
+
+        var hash = new HashingService().HashString(clientIp);
+
         var statistics = await db.LoadAsync<ViewStatistics>(nameof(ViewStatistics)) ?? new ViewStatistics();
+        
+        var visitor = await db.LoadAsync<Visitor>($"{nameof(Visitor)}|{hash}") ?? new Visitor(hash);
 
-        statistics.Total++;
+        if (visitor.IsNew())
+        {
+            statistics.UniqueVisitors++;
+        }
+        
+        visitor.Views++;
+        statistics.TotalViews++;
 
+        await db.SaveAsync(visitor);
         await db.SaveAsync(statistics);
 
         return statistics;
