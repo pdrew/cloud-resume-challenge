@@ -11,12 +11,17 @@ public class Visitor
     }
     public Visitor(string ipHash)
     {
-        PartitionKey = $"{nameof(Visitor)}|{ipHash}";
+        PartitionKey = "VISITOR";
+        SortKey = ipHash;
     }
     
     [DynamoDBHashKey("pk")]
-    [JsonIgnore]
     public string PartitionKey { get; private set; }
+    
+    [DynamoDBRangeKey("sk")]
+    
+    public string SortKey { get; private set; }
+    
     
     [DynamoDBProperty("views")]
     public int Views { get; set; }

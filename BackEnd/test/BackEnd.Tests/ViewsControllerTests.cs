@@ -18,7 +18,7 @@ public class ViewsControllerTests
     public async Task IndexReturnsCorrectResult()
     {
         dbMock
-            .Setup(x => x.LoadAsync<ViewStatistics>("ViewStatistics", It.IsAny<CancellationToken>()))
+            .Setup(x => x.LoadAsync<ViewStatistics>("STATISTICS", "VIEWS", It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ViewStatistics() { TotalViews = 42 });
 
         clientIpAccessorMock.Setup(x => x.GetClientIp()).Returns("127.0.0.1");
@@ -34,7 +34,7 @@ public class ViewsControllerTests
     public async Task IndexReturnsCorrectResultWhenTableEmpty()
     {
         dbMock
-            .Setup(x => x.LoadAsync<ViewStatistics>("ViewStatistics", It.IsAny<CancellationToken>()))!
+            .Setup(x => x.LoadAsync<ViewStatistics>("STATISTICS", "VIEWS", It.IsAny<CancellationToken>()))!
             .ReturnsAsync((ViewStatistics)null!);
 
         clientIpAccessorMock.Setup(x => x.GetClientIp()).Returns("127.0.0.1");
@@ -52,7 +52,7 @@ public class ViewsControllerTests
         var viewStatistics = new ViewStatistics() { TotalViews = 42 };
         
         dbMock
-            .Setup(x => x.LoadAsync<ViewStatistics>("ViewStatistics", It.IsAny<CancellationToken>()))
+            .Setup(x => x.LoadAsync<ViewStatistics>("STATISTICS", "VIEWS", It.IsAny<CancellationToken>()))
             .ReturnsAsync(viewStatistics);
 
         dbMock
@@ -73,7 +73,7 @@ public class ViewsControllerTests
     public async Task IncrementReturnsCorrectResultWhenTableEmpty()
     {
         dbMock
-            .Setup(x => x.LoadAsync<ViewStatistics>("ViewStatistics", It.IsAny<CancellationToken>()))!
+            .Setup(x => x.LoadAsync<ViewStatistics>("STATISTICS", "VIEWS", It.IsAny<CancellationToken>()))!
             .ReturnsAsync((ViewStatistics)null!);
 
         dbMock

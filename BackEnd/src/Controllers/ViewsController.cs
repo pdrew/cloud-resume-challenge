@@ -23,7 +23,7 @@ public class ViewsController : ControllerBase
     [HttpGet]
     public async Task<ViewStatistics> Index()
     {
-        var statistics = await db.LoadAsync<ViewStatistics>(nameof(ViewStatistics)) ?? new ViewStatistics();
+        var statistics = await db.LoadAsync<ViewStatistics>("STATISTICS", "VIEWS") ?? new ViewStatistics();
 
         return statistics;
     }
@@ -35,9 +35,9 @@ public class ViewsController : ControllerBase
 
         var hash = new HashingService().HashString(clientIp);
 
-        var statistics = await db.LoadAsync<ViewStatistics>(nameof(ViewStatistics)) ?? new ViewStatistics();
+        var statistics = await db.LoadAsync<ViewStatistics>("STATISTICS", "VIEWS") ?? new ViewStatistics();
         
-        var visitor = await db.LoadAsync<Visitor>($"{nameof(Visitor)}|{hash}") ?? new Visitor(hash);
+        var visitor = await db.LoadAsync<Visitor>("VISITOR", hash) ?? new Visitor(hash);
 
         if (visitor.IsNew())
         {
