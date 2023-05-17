@@ -39,7 +39,8 @@ public class BackEnd : Construct
                 Name = "sk",
                 Type = AttributeType.STRING
             },
-            RemovalPolicy = RemovalPolicy.DESTROY
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            Stream = StreamViewType.NEW_AND_OLD_IMAGES
         });
 
         var signingProfile = new SigningProfile(this, "SigningProfile", new SigningProfileProps()

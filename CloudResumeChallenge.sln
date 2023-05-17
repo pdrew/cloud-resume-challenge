@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlackNotifier", "Helpers\Sl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlackNotifier.Tests", "Helpers\SlackNotifier\test\SlackNotifier.Tests\SlackNotifier.Tests.csproj", "{F4558E96-4DB9-4A14-8AE3-D0C84CAE551C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewsAggregator", "Helpers\ViewsAggregator\src\ViewsAggregator.csproj", "{14CDE94B-3A32-4CAB-BDC7-E5530EF6AC63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{F4558E96-4DB9-4A14-8AE3-D0C84CAE551C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4558E96-4DB9-4A14-8AE3-D0C84CAE551C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4558E96-4DB9-4A14-8AE3-D0C84CAE551C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14CDE94B-3A32-4CAB-BDC7-E5530EF6AC63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14CDE94B-3A32-4CAB-BDC7-E5530EF6AC63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14CDE94B-3A32-4CAB-BDC7-E5530EF6AC63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14CDE94B-3A32-4CAB-BDC7-E5530EF6AC63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D9C66131-471C-4FA5-9F24-84388E57408B} = {0EAB3363-8357-44E5-A5DD-DFB1D6CBCD58}
