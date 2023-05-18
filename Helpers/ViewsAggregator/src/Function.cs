@@ -44,6 +44,8 @@ public class Function
             statistics.TotalViews += delta;
         }
 
+        await db.SaveAsync(statistics);
+
         context.Logger.LogInformation("Stream processing complete.");
     }
     
