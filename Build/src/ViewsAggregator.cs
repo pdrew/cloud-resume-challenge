@@ -9,7 +9,7 @@ namespace Build;
 
 public class ViewsAggregator : Construct
 {
-    public ViewsAggregator(Construct scope, string id, ITable table) : base(scope, id)
+    public ViewsAggregator(Construct scope, string id, ViewsAggregatorProps props) : base(scope, id)
     {
         var function = new Function(this, "Function", new FunctionProps()
         {
@@ -22,7 +22,7 @@ public class ViewsAggregator : Construct
             Description = "ViewsAggregatorFunction"
         });
 
-        var eventSource = new DynamoEventSource(table, new DynamoEventSourceProps()
+        var eventSource = new DynamoEventSource(props.Table, new DynamoEventSourceProps()
         {
             StartingPosition = StartingPosition.TRIM_HORIZON,
             BatchSize = 1

@@ -43,6 +43,11 @@ public class BackEnd : Construct
             Stream = StreamViewType.NEW_AND_OLD_IMAGES
         });
 
+        new ViewsAggregator(this, "ViewsAggregator", new ViewsAggregatorProps()
+        {
+            Table = table
+        });
+
         var signingProfile = new SigningProfile(this, "SigningProfile", new SigningProfileProps()
         {   
             Platform = Platform.AWS_LAMBDA_SHA384_ECDSA
