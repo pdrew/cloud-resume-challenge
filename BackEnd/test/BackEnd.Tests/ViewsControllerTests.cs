@@ -46,39 +46,46 @@ public class ViewsControllerTests
         Assert.Equal(0, actual.TotalViews);
     }
     
-    /*
     [Fact]
     public async Task IncrementReturnsCorrectResult()
     {
-        var viewStatistics = new ViewStatistics() { TotalViews = 42 };
+        var clientIp = "127.0.0.1";
+
+        var hash = new HashingService().HashString(clientIp);
+        
+        var visitor = new Visitor(hash) { Views = 42 };
         
         dbMock
-            .Setup(x => x.LoadAsync<ViewStatistics>("STATISTICS", "VIEWS", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(viewStatistics);
+            .Setup(x => x.LoadAsync<Visitor>("VISITOR", hash, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(visitor);
 
         dbMock
-            .Setup(x => x.SaveAsync(viewStatistics, It.IsAny<CancellationToken>()))
+            .Setup(x => x.SaveAsync(visitor, It.IsAny<CancellationToken>()))
             .Verifiable();
 
-        clientIpAccessorMock.Setup(x => x.GetClientIp()).Returns("127.0.0.1");
+        clientIpAccessorMock.Setup(x => x.GetClientIp()).Returns(clientIp);
     
         var sut = new ViewsController(dbMock.Object, clientIpAccessorMock.Object);
 
         var actual = await sut.Increment();
         
-        Assert.Equal(43, actual.TotalViews);
+        Assert.Equal(43, actual.Views);
         dbMock.VerifyAll();
     }
     
     [Fact]
     public async Task IncrementReturnsCorrectResultWhenTableEmpty()
     {
+        var clientIp = "127.0.0.1";
+
+        var hash = new HashingService().HashString(clientIp);
+        
         dbMock
-            .Setup(x => x.LoadAsync<ViewStatistics>("STATISTICS", "VIEWS", It.IsAny<CancellationToken>()))!
-            .ReturnsAsync((ViewStatistics)null!);
+            .Setup(x => x.LoadAsync<Visitor>("VISITOR", hash, It.IsAny<CancellationToken>()))!
+            .ReturnsAsync((Visitor)null!);
 
         dbMock
-            .Setup(x => x.SaveAsync(It.IsAny<ViewStatistics>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.SaveAsync(It.IsAny<Visitor>(), It.IsAny<CancellationToken>()))
             .Verifiable();
 
         clientIpAccessorMock.Setup(x => x.GetClientIp()).Returns("127.0.0.1");
@@ -87,8 +94,7 @@ public class ViewsControllerTests
 
         var actual = await sut.Increment();
         
-        Assert.Equal(1, actual.TotalViews);
+        Assert.Equal(1, actual.Views);
         dbMock.VerifyAll();
     }
-    */
 }
