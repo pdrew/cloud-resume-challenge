@@ -34,10 +34,6 @@ public class ViewsAggregator : Construct
                 FilterCriteria.Filter(new Dictionary<string, object>()
                 {
                     { "eventName", FilterRule.Or("INSERT", "MODIFY") },
-                    
-                }),
-                FilterCriteria.Filter(new Dictionary<string, object>()
-                {
                     {
                         "dynamodb",  new Dictionary<string, object>()
                         {
@@ -54,6 +50,7 @@ public class ViewsAggregator : Construct
                             }
                         }
                     }
+                    
                 })
             }
         });
