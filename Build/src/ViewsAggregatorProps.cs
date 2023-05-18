@@ -4,5 +4,5 @@ namespace Build;
 
 public class ViewsAggregatorProps
 {
-    public ITable Table { get; set; }
+    public Table Table { get; set; }
 }

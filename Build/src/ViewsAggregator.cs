@@ -53,5 +53,7 @@ public class ViewsAggregator : Construct
         });
 
         function.AddEventSource(eventSource);
+        
+        function.AddDynamoPolicies(props.Table);
     }
 }
