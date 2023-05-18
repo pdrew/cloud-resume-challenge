@@ -11,7 +11,6 @@ public class ViewsAggregator : Construct
 {
     public ViewsAggregator(Construct scope, string id, ViewsAggregatorProps props) : base(scope, id)
     {
-        
         var function = new Function(this, "Function", new FunctionProps()
         {
             Runtime = Runtime.DOTNET_6,
@@ -20,7 +19,11 @@ public class ViewsAggregator : Construct
             Handler = "ViewsAggregator::ViewsAggregator.Function::FunctionHandler",
             Timeout = Duration.Seconds(30),
             Code = Code.FromAsset("../Helpers/ViewsAggregator/dist/viewsaggregator-function.zip"),
-            Description = "ViewsAggregatorFunction"
+            Description = "ViewsAggregatorFunction",
+            Environment = new Dictionary<string, string>
+            {
+                { "DYNAMODB_TABLE", props.Table.TableName }
+            }
         });
 
         var eventSource = new DynamoEventSource(props.Table, new DynamoEventSourceProps()

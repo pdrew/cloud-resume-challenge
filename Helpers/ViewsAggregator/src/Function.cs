@@ -1,10 +1,12 @@
 using System.Text.Json;
+using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.DynamoDBEvents;
 using Amazon.DynamoDBv2.Model;
+using Amazon.Util;
 using ViewsAggregator.Models;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
@@ -19,6 +21,12 @@ public class Function
     public Function()
     {
         db = new DynamoDBContext(new AmazonDynamoDBClient());
+        
+        AWSConfigsDynamoDB.Context.AddMapping(new TypeMapping(
+            typeof(ViewStatistics), Environment.GetEnvironmentVariable("DYNAMODB_TABLE")));
+
+        AWSConfigsDynamoDB.Context.AddMapping(new TypeMapping(
+            typeof(Visitor), Environment.GetEnvironmentVariable("DYNAMODB_TABLE")));
     }
     public async Task FunctionHandler(DynamoDBEvent dynamoEvent, ILambdaContext context)
     {
