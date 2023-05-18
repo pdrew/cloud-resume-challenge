@@ -14,25 +14,34 @@ namespace ViewsAggregator;
 
 public class Function
 {
-    private readonly DynamoDBContext _context;
+    private readonly DynamoDBContext db;
 
     public Function()
     {
-        _context = new DynamoDBContext(new AmazonDynamoDBClient());
+        db = new DynamoDBContext(new AmazonDynamoDBClient());
     }
-    public void FunctionHandler(DynamoDBEvent dynamoEvent, ILambdaContext context)
+    public async Task FunctionHandler(DynamoDBEvent dynamoEvent, ILambdaContext context)
     {
         context.Logger.LogInformation($"Beginning to process {dynamoEvent.Records.Count} records...");
+        
+        var statistics = await db.LoadAsync<ViewStatistics>("STATISTICS", "VIEWS") ?? new ViewStatistics();
 
         foreach (var record in dynamoEvent.Records)
         {
-            var visitor = GetObject<Visitor>(record.Dynamodb.OldImage);
-            context.Logger.LogInformation($"Old Image {JsonSerializer.Serialize(visitor)}");
+            var oldImage = GetObject<Visitor>(record.Dynamodb.OldImage);
+            context.Logger.LogInformation($"Old Image {JsonSerializer.Serialize(oldImage)}");
             
-            visitor = GetObject<Visitor>(record.Dynamodb.NewImage);
-            context.Logger.LogInformation($"New Image {JsonSerializer.Serialize(visitor)}");
-            
-            // TODO: Add business logic processing the record.Dynamodb object.
+            var newImage = GetObject<Visitor>(record.Dynamodb.NewImage);
+            context.Logger.LogInformation($"New Image {JsonSerializer.Serialize(newImage)}");
+
+            if (string.Equals(record.EventName,"INSERT", StringComparison.CurrentCultureIgnoreCase))
+            {
+                statistics.UniqueVisitors++;
+            }
+
+            var delta = newImage.Views - oldImage.Views;
+
+            statistics.TotalViews += delta;
         }
 
         context.Logger.LogInformation("Stream processing complete.");
@@ -41,6 +50,6 @@ public class Function
     private T GetObject<T>(Dictionary<string, AttributeValue> image)
     {
         var document = Document.FromAttributeMap(image);
-        return _context.FromDocument<T>(document);
+        return db.FromDocument<T>(document);
     }
 }

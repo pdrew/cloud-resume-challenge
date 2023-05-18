@@ -9,22 +9,21 @@ public class Visitor
     {
         
     }
-    public Visitor(string ipHash)
+    public Visitor(string id)
     {
         PartitionKey = "VISITOR";
-        SortKey = ipHash;
+        Id = id;
     }
     
     [DynamoDBHashKey("pk")]
+    [JsonIgnore]
     public string PartitionKey { get; private set; }
     
     [DynamoDBRangeKey("sk")]
     
-    public string SortKey { get; private set; }
+    public string Id { get; private set; }
     
     
     [DynamoDBProperty("views")]
     public int Views { get; set; }
-
-    public bool IsNew() => Views == 0;
 }

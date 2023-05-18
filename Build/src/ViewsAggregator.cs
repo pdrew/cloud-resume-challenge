@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using Amazon.CDK;
-using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Lambda.EventSources;
 using Amazon.CDK.AWS.Logs;
-using Amazon.CDK.AWS.SES.Actions;
 using Constructs;
 
 namespace Build;
@@ -50,11 +48,10 @@ public class ViewsAggregator : Construct
                             }
                         }
                     }
-                    
                 })
             }
         });
-        
+
         function.AddEventSource(eventSource);
     }
 }
