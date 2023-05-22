@@ -5,6 +5,12 @@ namespace ViewsAggregator.Models;
 
 public class ViewStatistics
 {
+    public ViewStatistics()
+    {
+        PartitionKey = "STATISTICS";
+        SortKey = "VIEWS";
+    }
+    
     [DynamoDBHashKey("pk")]
     public string PartitionKey { get; set; }
     
