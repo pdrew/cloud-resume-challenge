@@ -26,8 +26,7 @@ builder.Services.AddCors(options =>
         {
             policy
                 .WithOrigins(
-                    //$"https://{Environment.GetEnvironmentVariable("FRONTEND_DOMAIN")}"
-                    "http://localhost:3000"
+                    $"https://{Environment.GetEnvironmentVariable("FRONTEND_DOMAIN")}"
                 )
                 .WithMethods(
                     "GET", 
