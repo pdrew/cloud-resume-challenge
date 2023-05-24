@@ -1,9 +1,14 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace BackEnd.Services;
+namespace BackEnd.Shared.Services;
 
-public class HashingService
+public interface IHashingService
+{
+    string HashString(string text, string salt = "");
+}
+
+public class HashingService : IHashingService
 {
     public string HashString(string text, string salt = "")
     {

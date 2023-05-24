@@ -1,21 +1,23 @@
 ﻿using System.Text.Json.Serialization;
 using Amazon.DynamoDBv2.DataModel;
 
-namespace ViewsAggregator.Models;
+namespace BackEnd.Shared.Models;
 
 public class ViewStatistics
 {
-    public ViewStatistics()
+    public ViewStatistics(string month)
     {
         PartitionKey = "STATISTICS";
-        SortKey = "VIEWS";
+        Month = month;
     }
     
     [DynamoDBHashKey("pk")]
-    public string PartitionKey { get; set; }
+    [JsonIgnore]
+    public string PartitionKey { get; private set; }
     
     [DynamoDBRangeKey("sk")]
-    public string SortKey { get; set; }
+    [JsonIgnore]
+    public string Month { get; private set; }
     
     [DynamoDBProperty("total_views")]
     public int TotalViews { get; set; }

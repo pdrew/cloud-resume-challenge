@@ -40,7 +40,8 @@ public class BackEnd : Construct
                 Type = AttributeType.STRING
             },
             RemovalPolicy = RemovalPolicy.DESTROY,
-            Stream = StreamViewType.NEW_AND_OLD_IMAGES
+            Stream = StreamViewType.NEW_AND_OLD_IMAGES,
+            TimeToLiveAttribute = "ttl"
         });
 
         new ViewsAggregator(this, "ViewsAggregator", new ViewsAggregatorProps()

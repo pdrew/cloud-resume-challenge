@@ -13,6 +13,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BackEnd.csproj" />
+    <ProjectReference Include="..\..\src\BackEnd.Api\BackEnd.Api.csproj" />
+    <ProjectReference Include="..\..\src\BackEnd.Shared\BackEnd.Shared.csproj" />
   </ItemGroup>
 </Project>

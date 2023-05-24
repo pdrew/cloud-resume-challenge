@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Amazon.DynamoDBv2.DataModel;
 
-namespace BackEnd.Models;
+namespace BackEnd.Shared.Models;
 
 public class Visitor
 {
@@ -9,10 +9,11 @@ public class Visitor
     {
         
     }
-    public Visitor(string id)
+    public Visitor(string id, long expiration)
     {
         PartitionKey = "VISITOR";
         Id = id;
+        Expiration = expiration;
     }
     
     [DynamoDBHashKey("pk")]
@@ -24,6 +25,10 @@ public class Visitor
     public string Id { get; private set; }
     
     
-    [DynamoDBProperty("views")]
-    public int Views { get; set; }
+    [DynamoDBProperty("total_views")]
+    public int TotalViews { get; set; }
+    
+    [DynamoDBProperty("ttl")]
+    public long Expiration  { get; private set; }
+    
 }

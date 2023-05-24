@@ -7,7 +7,8 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.DynamoDBEvents;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Util;
-using ViewsAggregator.Models;
+using BackEnd.Shared.Models;
+using BackEnd.Shared.Services;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -16,11 +17,14 @@ namespace ViewsAggregator;
 
 public class Function
 {
-    private readonly DynamoDBContext db;
+    private readonly IDynamoDBContext db;
+
+    private readonly IDateTimeProvider dateTimeProvider;
 
     public Function()
     {
         db = new DynamoDBContext(new AmazonDynamoDBClient());
+        dateTimeProvider = new DateTimeProvider();
         
         AWSConfigsDynamoDB.Context.AddMapping(new TypeMapping(
             typeof(ViewStatistics), Environment.GetEnvironmentVariable("DYNAMODB_TABLE")));
@@ -31,8 +35,10 @@ public class Function
     public async Task FunctionHandler(DynamoDBEvent dynamoEvent, ILambdaContext context)
     {
         context.Logger.LogInformation($"Beginning to process {dynamoEvent.Records.Count} records...");
+
+        var month = dateTimeProvider.GetCurrentYearAndMonthDatePartString();
         
-        var statistics = await db.LoadAsync<ViewStatistics>("STATISTICS", "VIEWS") ?? new ViewStatistics();
+        var statistics = await db.LoadAsync<ViewStatistics>("STATISTICS", month) ?? new ViewStatistics(month);
 
         foreach (var record in dynamoEvent.Records)
         {
@@ -47,7 +53,7 @@ public class Function
                 statistics.UniqueVisitors++;
             }
 
-            var delta = newImage.Views - oldImage.Views;
+            var delta = newImage.TotalViews - oldImage.TotalViews;
 
             statistics.TotalViews += delta;
         }

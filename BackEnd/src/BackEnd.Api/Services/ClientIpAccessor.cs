@@ -1,4 +1,4 @@
-﻿namespace BackEnd.Services;
+﻿namespace BackEnd.Api.Services;
 
 public interface IClientIpAccessor
 {

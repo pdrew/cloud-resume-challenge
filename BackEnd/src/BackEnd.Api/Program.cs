@@ -2,11 +2,11 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
-using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.Util;
-using BackEnd.Models;
-using BackEnd.Services;
+using BackEnd.Shared.Models;
+using BackEnd.Shared.Services;
+using BackEnd.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +17,8 @@ builder.Services.AddControllers();
 // package will act as the webserver translating request and responses between the Lambda event source and ASP.NET Core.
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
 
+
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
@@ -24,7 +26,8 @@ builder.Services.AddCors(options =>
         {
             policy
                 .WithOrigins(
-                    $"https://{Environment.GetEnvironmentVariable("FRONTEND_DOMAIN")}"
+                    //$"https://{Environment.GetEnvironmentVariable("FRONTEND_DOMAIN")}"
+                    "http://localhost:3000"
                 )
                 .WithMethods(
                     "GET", 
@@ -33,6 +36,7 @@ builder.Services.AddCors(options =>
                 .AllowAnyHeader();
         });
 });
+
 
 var chain = new CredentialProfileStoreChain();
 
@@ -57,6 +61,8 @@ builder.Services.AddAWSService<IAmazonDynamoDB>();
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
 builder.Services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IClientIpAccessor, ClientIpAccessor>();
+builder.Services.AddScoped<IHashingService, HashingService>();
+builder.Services.AddScoped<IDateTimeProvider, DateTimeProvider>();
 
 AWSConfigsDynamoDB.Context.AddMapping(new TypeMapping(
     typeof(ViewStatistics), Environment.GetEnvironmentVariable("DYNAMODB_TABLE")));
