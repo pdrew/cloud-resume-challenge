@@ -92,7 +92,7 @@ public class BackEnd : Construct
             Runtime = Runtime.DOTNET_6,
             MemorySize = 256,
             LogRetention = RetentionDays.ONE_DAY,
-            Handler = "BackEnd",
+            Handler = "BackEnd.Api",
             Timeout = Duration.Seconds(30),
             Code = Code.FromBucket(bucket, codeSigner.SignedObjecKey),
             CodeSigningConfig = signingConfig,
