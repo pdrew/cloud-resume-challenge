@@ -5,6 +5,11 @@ namespace BackEnd.Shared.Models;
 
 public class ViewStatistics
 {
+    private ViewStatistics()
+    {
+        
+    }
+    
     public ViewStatistics(string month)
     {
         PartitionKey = "STATISTICS";
@@ -16,7 +21,6 @@ public class ViewStatistics
     public string PartitionKey { get; private set; }
     
     [DynamoDBRangeKey("sk")]
-    [JsonIgnore]
     public string Month { get; private set; }
     
     [DynamoDBProperty("total_views")]

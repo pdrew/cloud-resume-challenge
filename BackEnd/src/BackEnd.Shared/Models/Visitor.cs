@@ -5,7 +5,7 @@ namespace BackEnd.Shared.Models;
 
 public class Visitor
 {
-    public Visitor()
+    private Visitor()
     {
         
     }
