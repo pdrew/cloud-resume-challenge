@@ -5,7 +5,7 @@ namespace BackEnd.Shared.Models;
 
 public class ViewStatistics
 {
-    private ViewStatistics()
+    public ViewStatistics()
     {
         
     }
