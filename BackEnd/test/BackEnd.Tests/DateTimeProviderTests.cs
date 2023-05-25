@@ -5,10 +5,13 @@ namespace BackEnd.Tests;
 
 public class DateTimeProviderTests
 {
-    [Fact]
-    public void GetEndOfMonthUtcReturnsCorrectResult()
+    [Theory]
+    [InlineData(24, 11, 11, 42)]
+    [InlineData(31, 23, 23, 59)]
+    [InlineData(1, 0, 0, 0)]
+    public void GetEndOfMonthUtcReturnsCorrectResult(int day, int hour, int minute, int seconds)
     {
-        var dateTime = new DateTimeOffset(2023, 5, 24, 11, 11, 42, DateTimeOffset.UtcNow.Offset);
+        var dateTime = new DateTimeOffset(2023, 5, day, hour, minute, seconds, DateTimeOffset.UtcNow.Offset);
 
         var actual = new DateTimeProvider().GetEndOfMonthUtc(dateTime);
         
