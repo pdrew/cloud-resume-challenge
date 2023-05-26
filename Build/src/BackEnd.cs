@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.CertificateManager;
 using Amazon.CDK.AWS.DynamoDB;
-using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.Route53;
@@ -14,9 +12,6 @@ using Amazon.CDK.AWS.S3.Deployment;
 using Amazon.CDK.AWS.Signer;
 using Amazon.CDK.AWS.SNS;
 using Amazon.CDK.AWS.SNS.Subscriptions;
-using Amazon.CDK.AWS.SSM;
-using Amazon.CDK.CloudAssembly.Schema;
-using Amazon.CDK.CustomResources;
 using Constructs;
 using Attribute = Amazon.CDK.AWS.DynamoDB.Attribute;
 
@@ -39,7 +34,19 @@ public class BackEnd : Construct
                 Name = "pk",
                 Type = AttributeType.STRING
             },
-            RemovalPolicy = RemovalPolicy.DESTROY
+            SortKey = new Attribute()
+            {
+                Name = "sk",
+                Type = AttributeType.STRING
+            },
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            Stream = StreamViewType.NEW_AND_OLD_IMAGES,
+            TimeToLiveAttribute = "ttl"
+        });
+
+        new ViewsAggregator(this, "ViewsAggregator", new ViewsAggregatorProps()
+        {
+            Table = table
         });
 
         var signingProfile = new SigningProfile(this, "SigningProfile", new SigningProfileProps()
@@ -85,7 +92,7 @@ public class BackEnd : Construct
             Runtime = Runtime.DOTNET_6,
             MemorySize = 256,
             LogRetention = RetentionDays.ONE_DAY,
-            Handler = "BackEnd",
+            Handler = "BackEnd.Api",
             Timeout = Duration.Seconds(30),
             Code = Code.FromBucket(bucket, codeSigner.SignedObjecKey),
             CodeSigningConfig = signingConfig,

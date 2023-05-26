@@ -1,9 +1,12 @@
 import Head from 'next/head';
 import Layout, { siteTitle } from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
-import Counter, { url } from '../components/counter';
+import Counter from '../components/counter';
 
-fetch(url, { method: 'POST' }).then().catch((err) => console.error(err));
+const url = `https://${process.env.NEXT_PUBLIC_API_DOMAIN}/views`;
+
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
+fetcher(url, { method: 'POST' }).then();
 
 export default function Home() {
 
@@ -15,7 +18,7 @@ export default function Home() {
       <section className={utilStyles.headingMd}>
         <p>Hi! I'm Patrick Drew, <span>Software Engineer at <a href="https://www.tessituranetwork.com/">Tessitura Network.</a></span> You can contact me on <span><a href="https://www.linkedin.com/in/patrick-drew-41493432/">LinkedIn.</a></span></p>
         <p>I created this page as part of the <span><a href="https://cloudresumechallenge.dev">Cloud Resume Challenge.</a></span></p>
-        <Counter />
+        <Counter url={url}/>
       </section>
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Work Experience</h2>
