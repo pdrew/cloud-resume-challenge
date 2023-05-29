@@ -2,8 +2,8 @@ import useSWR from 'swr';
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-export default function Counter({ url }) {
-    const { data, error, isLoading } = useSWR(url, fetcher)
+export default function Counter({ url, timestamp }) {
+    const { data, error, isLoading } = useSWR(`${url}?timestamp=${timestamp}`, fetcher)
     
     if (error) return <p>Failed to load view statistics</p>
     if (isLoading) return <p>Fetching view statistics...</p>

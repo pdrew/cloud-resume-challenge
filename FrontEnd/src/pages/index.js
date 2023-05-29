@@ -8,6 +8,8 @@ const url = `https://${process.env.NEXT_PUBLIC_API_DOMAIN}/views`;
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 fetcher(url, { method: 'POST' }).then();
 
+const timestamp = Math.floor(Date.now() / 1000);
+
 export default function Home() {
 
   return (
@@ -18,7 +20,7 @@ export default function Home() {
       <section className={utilStyles.headingMd}>
         <p>Hi! I'm Patrick Drew, <span>Software Engineer at <a href="https://www.tessituranetwork.com/">Tessitura Network.</a></span> You can contact me on <span><a href="https://www.linkedin.com/in/patrick-drew-41493432/">LinkedIn.</a></span></p>
         <p>I created this page as part of the <span><a href="https://cloudresumechallenge.dev">Cloud Resume Challenge.</a></span></p>
-        <Counter url={url}/>
+        <Counter url={url} timestamp={timestamp}/>
       </section>
       <section className={`${utilStyles.headingMd} ${utilStyles.padding1px}`}>
         <h2 className={utilStyles.headingLg}>Work Experience</h2>

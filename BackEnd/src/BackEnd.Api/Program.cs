@@ -17,14 +17,10 @@ builder.Services.AddControllers();
 // package will act as the webserver translating request and responses between the Lambda event source and ASP.NET Core.
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
 
-var allowedOrigin = $"https://{Environment.GetEnvironmentVariable("FRONTEND_DOMAIN")}";
-
 var chain = new CredentialProfileStoreChain();
 
 if(chain.TryGetAWSCredentials("crc-dev", out var credentials))
 {
-    allowedOrigin = "http://localhost";
-    
     var awsOptions = new AWSOptions()
     {
         Credentials = credentials,
@@ -40,6 +36,9 @@ else
     builder.Services.AddDefaultAWSOptions(awsOptions);
 }
 
+var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS")?.Split(",") 
+                     ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
@@ -47,7 +46,7 @@ builder.Services.AddCors(options =>
         {
             policy
                 .WithOrigins(
-                    allowedOrigin
+                    allowedOrigins
                 )
                 .WithMethods(
                     "GET", 
