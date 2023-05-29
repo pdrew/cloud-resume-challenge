@@ -8,5 +8,5 @@ export default function Counter({ url, timestamp }) {
     if (error) return <p>Failed to load view statistics</p>
     if (isLoading) return <p>Fetching view statistics...</p>
 
-    return <p>This page has been viewed <span id="total-views">{data.totalViews}</span> times by <span id="unique-visitors">{data.uniqueVisitors}</span> unique visitors.</p>
+    return <p>This page has been viewed <span id="total-views">{data.totalViews}</span> times by <span id="unique-visitors">{data.uniqueVisitors}</span> unique visitors in the past month.</p>
 }
