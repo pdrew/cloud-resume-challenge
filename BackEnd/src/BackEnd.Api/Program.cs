@@ -17,26 +17,6 @@ builder.Services.AddControllers();
 // package will act as the webserver translating request and responses between the Lambda event source and ASP.NET Core.
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.RestApi);
 
-
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-        policy =>
-        {
-            policy
-                .WithOrigins(
-                    $"https://{Environment.GetEnvironmentVariable("FRONTEND_DOMAIN")}"
-                )
-                .WithMethods(
-                    "GET", 
-                    "POST"
-                )
-                .AllowAnyHeader();
-        });
-});
-
-
 var chain = new CredentialProfileStoreChain();
 
 if(chain.TryGetAWSCredentials("crc-dev", out var credentials))
@@ -55,6 +35,26 @@ else
     
     builder.Services.AddDefaultAWSOptions(awsOptions);
 }
+
+var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS")?.Split(",") 
+                     ?? Array.Empty<string>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy
+                .WithOrigins(
+                    allowedOrigins
+                )
+                .WithMethods(
+                    "GET", 
+                    "POST"
+                )
+                .AllowAnyHeader();
+        });
+});
 
 builder.Services.AddAWSService<IAmazonDynamoDB>();
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();

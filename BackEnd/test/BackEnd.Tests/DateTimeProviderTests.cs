@@ -29,4 +29,24 @@ public class DateTimeProviderTests
         
         Assert.Equal("202305", actual);
     }
+
+    [Theory]
+    [InlineData(0, false)]
+    [InlineData(-6, true)]
+    public void TimestampExpiredReturnsCorrectResult(int seconds, bool expected)
+    {
+        var timestamp = DateTimeOffset.UtcNow.AddSeconds(seconds).ToUnixTimeSeconds();
+
+        var actual = new DateTimeProvider().TimestampExpired(timestamp);
+        
+        Assert.Equal(expected, actual);
+    }
+    
+    [Fact]
+    public void TimestampExpiredReturnsCorrectResultWhenArgIsNull()
+    {
+        var actual = new DateTimeProvider().TimestampExpired(null);
+        
+        Assert.False(actual);
+    }
 }

@@ -5,6 +5,8 @@ public interface IDateTimeProvider
     DateTimeOffset GetEndOfCurrentMonthUtc();
 
     string GetCurrentYearAndMonthDatePartString();
+
+    bool TimestampExpired(long? timestamp);
 }
 
 public class DateTimeProvider : IDateTimeProvider
@@ -17,6 +19,11 @@ public class DateTimeProvider : IDateTimeProvider
     public string GetCurrentYearAndMonthDatePartString()
     {
         return GetYearAndMonthDatePartString(DateTimeOffset.UtcNow);
+    }
+
+    public bool TimestampExpired(long? timestamp)
+    {
+        return DateTimeOffset.UtcNow.AddSeconds(-5).ToUnixTimeSeconds() > timestamp;
     }
 
     public DateTimeOffset GetEndOfMonthUtc(DateTimeOffset dateTimeOffset)

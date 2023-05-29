@@ -26,13 +26,22 @@ public class ViewsController : ControllerBase
     
     // GET
     [HttpGet]
-    public async Task<ViewStatistics> Index()
+    public async Task<ViewStatistics> Index(long? timestamp = null)
     {
         var month = dateTimeProvider.GetCurrentYearAndMonthDatePartString();
-        
-        var statistics = await db.LoadAsync<ViewStatistics>("STATISTICS", month) ?? new ViewStatistics(month);
 
-        return statistics;
+        if (dateTimeProvider.TimestampExpired(timestamp))
+        {
+            return await db.LoadAsync<ViewStatistics>("STATISTICS", month) ?? new ViewStatistics(month);
+        }
+
+        var visitors = await db.QueryAsync<Visitor>("VISITOR").GetRemainingAsync();
+
+        return new ViewStatistics(month)
+        {
+            UniqueVisitors = visitors?.Count ?? 0,
+            TotalViews = visitors?.Sum(x => x.TotalViews) ?? 0
+        };
     }
 
     [HttpPost]

@@ -14,7 +14,8 @@ public class ViewsControllerTests
     private Mock<IClientIpAccessor> clientIpAccessorMock = new();
     private Mock<IDateTimeProvider> dateTimeProviderMock = new();
     private Mock<IHashingService> hashingServiceMock = new();
-    
+    private Mock<AsyncSearch<Visitor>> asyncSearchMock = new();
+
     [Fact]
     public async Task IndexReturnsCorrectResult()
     {
@@ -22,6 +23,8 @@ public class ViewsControllerTests
         
         dateTimeProviderMock.Setup(x => x.GetCurrentYearAndMonthDatePartString())
             .Returns(month);
+        
+        dateTimeProviderMock.Setup(x => x.TimestampExpired(It.IsAny<long?>())).Returns(true);
         
         dbMock
             .Setup(x => x.LoadAsync<ViewStatistics>("STATISTICS", month, It.IsAny<CancellationToken>()))
@@ -41,6 +44,8 @@ public class ViewsControllerTests
         
         dateTimeProviderMock.Setup(x => x.GetCurrentYearAndMonthDatePartString())
             .Returns(month);
+
+        dateTimeProviderMock.Setup(x => x.TimestampExpired(It.IsAny<long?>())).Returns(true);
         
         dbMock
             .Setup(x => x.LoadAsync<ViewStatistics>("STATISTICS", month, It.IsAny<CancellationToken>()))!
@@ -116,5 +121,36 @@ public class ViewsControllerTests
         
         Assert.Equal(1, actual.TotalViews);
         dbMock.VerifyAll();
+    }
+    
+    [Fact]
+    public async Task IndexQueriesVisitorsWhenTimestampHasNotExpired()
+    {
+        var month = "202305";
+        
+        dateTimeProviderMock.Setup(x => x.GetCurrentYearAndMonthDatePartString())
+            .Returns(month);
+
+        dateTimeProviderMock.Setup(x => x.TimestampExpired(It.IsAny<long?>())).Returns(false);
+
+        asyncSearchMock.Setup(x => x.GetRemainingAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Visitor>()
+            {
+                new () { TotalViews = 1 },
+                new () { TotalViews = 1 },
+                new () { TotalViews = 2 },
+            });
+        
+        dbMock
+            .Setup(x => x.QueryAsync<Visitor>("VISITOR", It.IsAny<DynamoDBOperationConfig>()))!
+            .Returns(asyncSearchMock.Object);
+        
+        var sut = new ViewsController(dbMock.Object, clientIpAccessorMock.Object, dateTimeProviderMock.Object, hashingServiceMock.Object);
+
+        var actual = await sut.Index();
+        
+        Assert.Equal(3, actual.UniqueVisitors);
+        Assert.Equal(4, actual.TotalViews);
+        Assert.Equal(month, actual.Month);
     }
 }

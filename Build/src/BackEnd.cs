@@ -100,7 +100,7 @@ public class BackEnd : Construct
             Environment = new Dictionary<string, string>
             {
                 { "DYNAMODB_TABLE", table.TableName },
-                { "FRONTEND_DOMAIN",  props.FrontEndDomainName }
+                { "ALLOWED_ORIGINS",  $"https://{props.FrontEndDomainName}" }
             }
         });
         
