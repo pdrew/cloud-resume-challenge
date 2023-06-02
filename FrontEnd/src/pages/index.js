@@ -9,8 +9,6 @@ import Counter from '../components/counter'
 
 const url = `https://${process.env.NEXT_PUBLIC_API_DOMAIN}/views`;
 
-console.log(url);
-
 fetch(url, { method: 'POST' }).then();
 
 const timestamp = Math.floor(Date.now() / 1000);
@@ -31,9 +29,9 @@ export function getStaticProps() {
 
 export default function Home({ positions, certifications, projects, skillCategories }) {
     return (
-        <div class="p-6 mx-auto page max-w-2xl print:max-w-letter md:max-w-letter md:h-letter xsm:p-8 sm:p-9 md:p-16 bg-white">
+        <div className="p-6 mx-auto page max-w-2xl print:max-w-letter md:max-w-letter md:h-letter xsm:p-8 sm:p-9 md:p-16 bg-white">
             <Header/>
-            <div class="md:col-count-2 print:col-count-2 col-gap-md md:h-letter-col print:h-letter-col col-fill-auto">
+            <div className="md:col-count-2 print:col-count-2 col-gap-md md:h-letter-col print:h-letter-col col-fill-auto">
                 <Experience positions={positions} />
                 <Certifications certifications={certifications} />
                 <Projects projects={projects} />
