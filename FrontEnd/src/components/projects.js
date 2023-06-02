@@ -1,12 +1,8 @@
+import Section from "./section";
+
 export default function Projects({ projects }) {
     return (
-        <section class="mt-8 first:mt-0">
-          <div class="break-inside-avoid">
-
-            <h2 class="mb-4 font-bold tracking-widest text-sm2 text-gray-550 print:font-normal">
-              PROJECTS
-            </h2>
-
+        <Section title="PROJECTS">
             {projects.map((project) => (
                 <section class="mb-4.5 break-inside-avoid">
                     <header>
@@ -25,9 +21,6 @@ export default function Projects({ projects }) {
                     </p>
                 </section> 
             ))}
-
-          </div>
-
-        </section>
+        </Section>
     )
 }

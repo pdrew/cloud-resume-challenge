@@ -1,13 +1,8 @@
+import Section from "./section";
+
 export default function Contact() {
     return (
-        <section class="mt-8 first:mt-0">
-
-          <div class="break-inside-avoid">
-
-            <h2 class="mb-4 font-bold tracking-widest text-sm2 text-gray-550 print:font-normal">
-              CONTACT
-            </h2>
-
+        <Section title="CONTACT">
             <section class="mb-4.5 break-inside-avoid">
               <ul class="list-inside pr-7">
                 <li class="mt-1.5 leading-normal text-gray-700 text-md">
@@ -21,9 +16,6 @@ export default function Contact() {
                 </li>
               </ul>
             </section>
-
-          </div>
-
-        </section>
+        </Section>
     )
 }
