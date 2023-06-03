@@ -4,8 +4,8 @@ import Section from "./section";
 export default function Experience({ positions }) {
     return (    
         <Section title="EXPERIENCE">
-            {positions.map((p) => (
-                <Position position={p} />
+            {positions.map((p, i) => (
+                <Position position={p} key={`position-${i}`} />
             ))}
         </Section>
     )

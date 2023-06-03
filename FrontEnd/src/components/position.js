@@ -10,8 +10,8 @@ export default function Position({ position }) {
                 </p>
             </header>
             <ul className="">
-                {position.achievements.map((achievement) => (
-                    <li className="mt-2.1 text-md text-gray-700 leading-normal">
+                {position.achievements.map((achievement, i) => (
+                    <li className="mt-2.1 text-md text-gray-700 leading-normal" key={`achievement-${i}`}>
                         <span className="absolute -ml-3 sm:-ml-3.2 select-none transform -translate-y-px">›</span>
                         {achievement}
                     </li>

@@ -3,8 +3,8 @@ import Section from "./section"
 export default function Certifications({ certifications }) {
     return (
         <Section title="CERTIFICATIONS">
-            {certifications.map((certificate) => (
-                <section className="mb-4.5 break-inside-avoid">
+            {certifications.map((certificate, i) => (
+                <section className="mb-4.5 break-inside-avoid" key={`certification-${i}`}>
                     <header>
                         <h3 className="text-lg font-semibold text-gray-700 leading-snugish">
                         {certificate.title}

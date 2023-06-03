@@ -3,8 +3,8 @@ import Section from "./section";
 export default function Projects({ projects }) {
     return (
         <Section title="PROJECTS">
-            {projects.map((project) => (
-                <section className="mb-4.5 break-inside-avoid">
+            {projects.map((project, i) => (
+                <section className="mb-4.5 break-inside-avoid" key={`project-${i}`}>
                     <header>
                         <h3 className="text-lg font-semibold text-gray-700 leading-snugish">
                         <a href={project.url} className="group">
