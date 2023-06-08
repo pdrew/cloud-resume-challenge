@@ -1,8 +1,6 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 const plugin = require("tailwindcss/plugin");
 
-console.log();
-
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",

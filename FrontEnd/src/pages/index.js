@@ -6,6 +6,9 @@ import Skills from '../components/skills'
 import Contact from '../components/contact'
 import { getResume } from '../lib/resume'
 import Counter from '../components/counter'
+import Column from '../components/column'
+import Page from '../components/page'
+import Layout from '../components/layout'
 
 const url = `https://${process.env.NEXT_PUBLIC_API_DOMAIN}/views`;
 
@@ -29,16 +32,18 @@ export function getStaticProps() {
 
 export default function Home({ positions, certifications, projects, skillCategories }) {
     return (
-        <div className="p-6 mx-auto page max-w-2xl print:max-w-letter md:max-w-letter md:h-letter xsm:p-8 sm:p-9 md:p-16 bg-white">
-            <Header/>
-            <div className="md:col-count-2 print:col-count-2 col-gap-md md:h-letter-col print:h-letter-col col-fill-auto">
-                <Experience positions={positions} />
-                <Certifications certifications={certifications} />
-                <Projects projects={projects} />
-                <Skills categories={skillCategories} />
-                <Contact />
-                <Counter url={url} timestamp={timestamp} />
-            </div>                     
-        </div>
+        <Layout>
+            <Page>
+                <Header/>
+                <Column>
+                    <Experience positions={positions} />
+                    <Certifications certifications={certifications} />
+                    <Projects projects={projects} />
+                    <Skills categories={skillCategories} />
+                    <Contact />
+                    <Counter url={url} timestamp={timestamp} />
+                </Column>
+            </Page>
+        </Layout>
     )
   }

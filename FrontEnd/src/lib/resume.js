@@ -6,9 +6,9 @@ export function getResume() {
             end: 'Present',
             company: 'Tessitura Network',
             achievements: [
-                'Cooked shrimps for 2 to 3 minutes per side, or until opaque; then, transfered to a serving dish with limon',
-                'Roasted a pig, turning frequently, until meat reached 160°F in the thickest part of the shoulder or thigh',
-                'Filled burgdoggen & frankfurter strip steak with 90% burger patties and broth'
+                'Designed CloudFormation template and PowerShell DSC resources for creating a multi-subnet VPC and base EC2 instances used to complete SSS ROV.',
+                'Created monitoring solution for build server instances using Lambda, CloudWatch Agent, Logs, Alarms, Synthetic Canaries and AWS CDK.',
+                'Implemented custom patch management for EC2 instances using Systems Manager Automation and Run Commands, deployed and maintained with AWS CDK.'
             ]
         },
         {
@@ -17,9 +17,11 @@ export function getResume() {
             end: 'Apr 2022',
             company: 'Tessitura Network',
             achievements: [
-                'Cooked shrimps for 2 to 3 minutes per side, or until opaque; then, transfered to a serving dish with limon',
-                'Roasted a pig, turning frequently, until meat reached 160°F in the thickest part of the shoulder or thigh',
-                'Filled burgdoggen & frankfurter strip steak with 90% burger patties and broth'
+                'Full stack development on an enterprise CRM, a centralised platfrom for fundraising, marketing and ticketing, licensed by 750+ leading arts organisations.',
+                'Ported functionality from a legacy desktop application to a single page web application backed by a RESTful API.',
+                'Implemented pandemic rapid response features for the Tessitura ecommerce platform, allowing 500+ member organisations to retain revenue and stay connected with customers.',
+                'Responsible for database architecture, API design and Android client implementation of an access control / ticket scanning application.'
+
             ]
         },
         {
@@ -28,9 +30,10 @@ export function getResume() {
             end: 'Sep 2020',
             company: 'Tessitura Network',
             achievements: [
-                'Cooked shrimps for 2 to 3 minutes per side, or until opaque; then, transfered to a serving dish with limon',
-                'Roasted a pig, turning frequently, until meat reached 160°F in the thickest part of the shoulder or thigh',
-                'Filled burgdoggen & frankfurter strip steak with 90% burger patties and broth'
+                'Technical lead for integrating Sisense analytics platform with Tessitura enterprise CRM.',
+                'Developed single sign on solution between the two systems using ASP.NET and Angular.',
+                'Built continuous integration pipelines in GoCD and implemented end to end tests with Selenium.',
+                'Created custom visualisations using JavaScript, AngularJS, Highcharts, and D3.'
             ]
         },
         {
@@ -39,9 +42,9 @@ export function getResume() {
             end: 'Mar 2017',
             company: 'Tessitura',
             achievements: [
-                'Cooked shrimps for 2 to 3 minutes per side, or until opaque; then, transfered to a serving dish with limon',
-                'Roasted a pig, turning frequently, until meat reached 160°F in the thickest part of the shoulder or thigh',
-                'Filled burgdoggen & frankfurter strip steak with 90% burger patties and broth'
+                'Completed 5 data conversion projects, migrating client data from legacy systems into Tessitura with a 100% success rate.',
+                'Provided excellent support for users of Tessitura software, resolving impactful and time-sensitive issues with urgency.',
+                'Built custom applications for clients using ASP.NET, JavaScript, SQL Server and WPF.'
             ]
         },
     ]
@@ -66,8 +69,8 @@ export function getResume() {
             title: 'Cloud Resume Challenge',
             url: 'https://github.com/pdrew/cloud-resume-challenge',
             date: 'Since 2023',
-            technology: 'C# AWS',
-            detail: 'Good design is as little design as possible. Less, but better because it concentrates on the essential aspects, and the products are not burdened with non-essentials.'
+            technology: 'JavaScript C# AWS',
+            detail: 'Resume website created with Next.js and Tailwind, hosted in S3. Visitor counter powered by Lambda, DynamoDB and DynamoDB Streams. Infrastructure deployed with AWS CDK, CI/CD managed with GitHub Actions.'
         }
     ]
 
