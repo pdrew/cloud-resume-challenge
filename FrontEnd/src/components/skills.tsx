@@ -1,6 +1,6 @@
 import Section from "./section";
 
-export default function Skills({ categories }) {
+export default function Skills({ categories }: { categories: SkillCategory[] }) {
     return (
         <Section title="SKILLS">
             {categories.map((category, i) => (

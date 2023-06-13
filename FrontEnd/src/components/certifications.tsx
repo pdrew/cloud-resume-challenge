@@ -1,6 +1,6 @@
 import Section from "./section"
 
-export default function Certifications({ certifications }) {
+export default function Certifications({certifications}: {certifications: Certificate[]}) {
     return (
         <Section title="CERTIFICATIONS">
             {certifications.map((certificate, i) => (

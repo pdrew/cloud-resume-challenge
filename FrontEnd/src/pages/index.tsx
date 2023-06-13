@@ -9,6 +9,7 @@ import Counter from '../components/counter'
 import Column from '../components/column'
 import Page from '../components/page'
 import Layout from '../components/layout'
+import { GetStaticProps } from 'next'
 
 const url = `https://${process.env.NEXT_PUBLIC_API_DOMAIN}/views`;
 
@@ -16,7 +17,7 @@ fetch(url, { method: 'POST' }).then();
 
 const timestamp = Math.floor(Date.now() / 1000);
 
-export function getStaticProps() {
+export const getStaticProps: GetStaticProps = async (context) => {
     
     const resume = getResume();
 
@@ -30,7 +31,12 @@ export function getStaticProps() {
     }
 }
 
-export default function Home({ positions, certifications, projects, skillCategories }) {
+export default function Home({ positions, certifications, projects, skillCategories }: {
+    positions: Position[],
+    certifications: Certificate[],
+    projects: Project[],
+    skillCategories: SkillCategory[]
+}) {
     return (
         <Layout>
             <Page>
@@ -46,4 +52,4 @@ export default function Home({ positions, certifications, projects, skillCategor
             </Page>
         </Layout>
     )
-  }
+}

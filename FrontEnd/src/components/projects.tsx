@@ -1,6 +1,6 @@
 import Section from "./section";
 
-export default function Projects({ projects }) {
+export default function Projects({ projects }: { projects: Project[] }) {
     return (
         <Section title="PROJECTS">
             {projects.map((project, i) => (
