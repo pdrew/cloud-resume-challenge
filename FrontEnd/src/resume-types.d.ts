@@ -8,7 +8,8 @@ interface Position {
 
 interface Certificate {
     title: string,
-    date: string
+    date: string,
+    url: string
 }
 
 interface Project {
@@ -22,4 +23,11 @@ interface Project {
 interface SkillCategory {
     title: string,
     skills: string[]
+}
+
+interface Resume {
+    positions: Position[],
+    certifications: Certificate[],
+    projects: Project[],
+    skillCategories: SkillCategory[]
 }

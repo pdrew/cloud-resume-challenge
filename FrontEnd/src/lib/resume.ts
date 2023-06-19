@@ -1,5 +1,5 @@
-export function getResume() {
-    const positions = [
+export function getResume() : Resume {
+    const positions: Position[] = [
         {
             title: 'Infrastructure Engineer',
             start: 'Apr 2022',
@@ -49,32 +49,35 @@ export function getResume() {
         },
     ]
 
-    const certifications = [
+    const certifications: Certificate[] = [
         {
             title: 'Red Hat Certified Systems Administrator (RHCSA)',
-            date: 'Mar 2023'
+            date: 'Mar 2023',
+            url: 'https://www.credly.com/badges/de2f2882-3702-48e0-9c6e-1d0440413497'
         },
         {
             title: 'AWS Certified Solutions Architect - Professional',
-            date: 'Sep 2022'
+            date: 'Sep 2022',
+            url: 'https://www.credly.com/badges/3db5fc93-4a3e-4639-8676-2d6728ce2f31'
         },
         {
             title: 'AWS Certified Solutions Architect - Associate',
-            date: 'May 2022'
+            date: 'May 2022',
+            url: 'https://www.credly.com/badges/16b70a18-a010-47ff-8217-a862551830c2'
         }
     ]
 
-    const projects = [
+    const projects: Project[] = [
         {
             title: 'Cloud Resume Challenge',
             url: 'https://github.com/pdrew/cloud-resume-challenge',
             date: 'Since 2023',
-            technology: 'JavaScript C# AWS',
+            technology: 'TypeScript C# AWS',
             detail: 'Resume website created with Next.js and Tailwind, hosted in S3. Visitor counter powered by Lambda, DynamoDB and DynamoDB Streams. Infrastructure deployed with AWS CDK, CI/CD managed with GitHub Actions.'
         }
     ]
 
-    const skillCategories = [
+    const skillCategories: SkillCategory[] = [
         {
             title: 'Proficient',
             skills: [
@@ -84,7 +87,7 @@ export function getResume() {
         {
             title: 'Familiar',
             skills: [
-                'Angular', 'Kotlin', 'Android', 'WPF', 'Linux', 'Git', 'GoCD', 'Bamboo', 'Azure DevOps', 'GitHib Actions', 'Bitbucket Pipelines'
+                'Angular', 'Kotlin', 'Android', 'WPF', 'Linux', 'Git', 'GoCD', 'Bamboo', 'Azure DevOps', 'GitHub Actions', 'Bitbucket Pipelines'
             ]
         }
     ]
