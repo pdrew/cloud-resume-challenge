@@ -10,13 +10,20 @@
     "smokeTest": "cypress run --e2e"
   },
   "dependencies": {
+    "@tailwindcss/forms": "^0.5.3",
     "next": "latest",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "swr": "^2.1.1"
   },
   "devDependencies": {
+    "@types/node": "^20.3.1",
+    "@types/react": "^18.2.12",
+    "autoprefixer": "^10.4.14",
     "cypress": "^12.9.0",
-    "start-server-and-test": "^2.0.0"
+    "postcss": "^8.4.24",
+    "start-server-and-test": "^2.0.0",
+    "tailwindcss": "^3.3.2",
+    "typescript": "^5.1.3"
   }
 }
