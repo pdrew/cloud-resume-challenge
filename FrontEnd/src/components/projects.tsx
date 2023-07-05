@@ -1,4 +1,5 @@
 import Section from "./section";
+import Technologies from "./technologies";
 
 export default function Projects({ projects }: { projects: Project[] }) {
     return (
@@ -13,12 +14,13 @@ export default function Projects({ projects }: { projects: Project[] }) {
                         </a>
                         </h3>
                         <p className="leading-normal text-md text-gray-650">
-                        {project.date} | {project.technology}
+                        {project.date}
                         </p>
                     </header>
                     <p className="mt-2.1 text-md text-gray-700 leading-normal">
                         {project.detail}
                     </p>
+                    <Technologies technologies={project.technologies} />
                 </section> 
             ))}
         </Section>

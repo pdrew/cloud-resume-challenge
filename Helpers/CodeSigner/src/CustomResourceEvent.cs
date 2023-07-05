@@ -10,14 +10,14 @@ public class CustomResourceEvent<T>
     public string? ResourceType { get; set; }
     public string? PhysicalResourceId { get; set; }
     
-    public T ResourceProperties { get; set; }
+    public T? ResourceProperties { get; set; }
 }
 
 public class CustomResourceResponse
 {
-    public string PhysicalResourceId { get; set; }
+    public string? PhysicalResourceId { get; set; }
     
     public bool NoEcho { get; set; }
     
-    public Dictionary<string, object> Data { get; set; }
+    public Dictionary<string, object>? Data { get; set; }
 }

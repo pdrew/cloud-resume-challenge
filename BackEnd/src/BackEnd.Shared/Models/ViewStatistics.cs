@@ -18,10 +18,10 @@ public class ViewStatistics
     
     [DynamoDBHashKey("pk")]
     [JsonIgnore]
-    public string PartitionKey { get; private set; }
+    public string? PartitionKey { get; private set; }
     
     [DynamoDBRangeKey("sk")]
-    public string Month { get; private set; }
+    public string? Month { get; private set; }
     
     [DynamoDBProperty("total_views")]
     public int TotalViews { get; set; }

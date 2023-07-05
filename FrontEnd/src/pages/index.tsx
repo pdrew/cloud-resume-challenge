@@ -2,8 +2,6 @@ import Header from '../components/header'
 import Experience from '../components/experience'
 import Certifications from '../components/certifications'
 import Projects from '../components/projects'
-import Skills from '../components/skills'
-import Contact from '../components/contact'
 import { getResume } from '../lib/resume'
 import Counter from '../components/counter'
 import Column from '../components/column'
@@ -11,9 +9,9 @@ import Page from '../components/page'
 import Layout from '../components/layout'
 import { GetStaticProps } from 'next'
 
-const url = `https://${process.env.NEXT_PUBLIC_API_DOMAIN}/views`;
+const baseUrl = `https://${process.env.NEXT_PUBLIC_API_DOMAIN}`;
 
-fetch(url, { method: 'POST' }).then();
+fetch(`${baseUrl}/visitors`, { method: 'POST' }).then();
 
 const timestamp = Math.floor(Date.now() / 1000);
 
@@ -25,13 +23,12 @@ export const getStaticProps: GetStaticProps = async (context) => {
         props: {
             positions: resume.positions,
             certifications: resume.certifications,
-            projects: resume.projects,
-            skillCategories: resume.skillCategories
+            projects: resume.projects
         }
     }
 }
 
-export default function Home({ positions, certifications, projects, skillCategories }: {
+export default function Home({ positions, certifications, projects }: {
     positions: Position[],
     certifications: Certificate[],
     projects: Project[],
@@ -45,9 +42,7 @@ export default function Home({ positions, certifications, projects, skillCategor
                     <Experience positions={positions} />
                     <Certifications certifications={certifications} />
                     <Projects projects={projects} />
-                    <Skills categories={skillCategories} />
-                    <Contact />
-                    <Counter url={url} timestamp={timestamp} />
+                    <Counter baseUrl={baseUrl} timestamp={timestamp} />
                 </Column>
             </Page>
         </Layout>

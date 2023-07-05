@@ -18,17 +18,17 @@ public class Visitor
     
     [DynamoDBHashKey("pk")]
     [JsonIgnore]
-    public string PartitionKey { get; private set; }
+    public string? PartitionKey { get; private set; }
     
     [DynamoDBRangeKey("sk")]
     
-    public string Id { get; private set; }
+    public string? Id { get; private set; }
     
     
     [DynamoDBProperty("total_views")]
     public int TotalViews { get; set; }
     
     [DynamoDBProperty("ttl")]
-    public long Expiration  { get; private set; }
+    public long? Expiration  { get; private set; }
     
 }

@@ -11,17 +11,12 @@ namespace BackEnd.Api.Controllers;
 public class ViewsController : ControllerBase
 {
     private readonly IDynamoDBContext db;
-    private readonly IClientIpAccessor clientIpAccessor;
     private readonly IDateTimeProvider dateTimeProvider;
-    private readonly IHashingService hashingService;
 
-    public ViewsController(IDynamoDBContext db, IClientIpAccessor clientIpAccessor, 
-        IDateTimeProvider dateTimeProvider, IHashingService hashingService)
+    public ViewsController(IDynamoDBContext db, IDateTimeProvider dateTimeProvider)
     {
         this.db = db;
-        this.clientIpAccessor = clientIpAccessor;
         this.dateTimeProvider = dateTimeProvider;
-        this.hashingService = hashingService;
     }
     
     // GET
@@ -42,23 +37,5 @@ public class ViewsController : ControllerBase
             UniqueVisitors = visitors?.Count ?? 0,
             TotalViews = visitors?.Sum(x => x.TotalViews) ?? 0
         };
-    }
-
-    [HttpPost]
-    public async Task<Visitor> Increment()
-    {
-        var clientIp = clientIpAccessor.GetClientIp();
-
-        var expiration = dateTimeProvider.GetEndOfCurrentMonthUtc().ToUnixTimeSeconds();
-        
-        var hash = hashingService.HashString(clientIp, expiration.ToString());
-        
-        var visitor = await db.LoadAsync<Visitor>("VISITOR", hash) ?? new Visitor(hash, expiration);
-        
-        visitor.TotalViews++;
-
-        await db.SaveAsync(visitor);
-
-        return visitor;
     }
 }

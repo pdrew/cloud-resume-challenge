@@ -72,8 +72,8 @@ public class FunctionTest
 
         var actual = await sut.Handle(customResourceEvent, context);
 
-        var actualBucketName = actual.Data.GetValueOrDefault("BucketName") as string;
-        var actualKey = actual.Data.GetValueOrDefault("Key") as string;
+        var actualBucketName = actual.Data?.GetValueOrDefault("BucketName") as string;
+        var actualKey = actual.Data?.GetValueOrDefault("Key") as string;
         
         Assert.Equal(customResourceEvent.ResourceProperties.BucketName, actualBucketName);
         Assert.Equal("Garply", actualKey);

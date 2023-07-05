@@ -3,7 +3,8 @@ interface Position {
     start: string,
     end: string,
     company: string,
-    achievements: string[]
+    achievements: string[],
+    technologies: string[]
 }
 
 interface Certificate {
@@ -16,8 +17,8 @@ interface Project {
     title: string,
     url: string,
     date: string,
-    technology: string,
-    detail: string
+    detail: string,
+    technologies: string[]
 }
 
 interface SkillCategory {

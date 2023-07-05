@@ -1,3 +1,5 @@
+import Technologies from "./technologies";
+
 export default function Position({ position }: { position: Position }) {
     return (
         <section className="mb-4.5 break-inside-avoid">
@@ -17,6 +19,7 @@ export default function Position({ position }: { position: Position }) {
                     </li>
                 ))}
             </ul>
+            <Technologies technologies={position.technologies} />
         </section>
     )
 }

@@ -32,7 +32,7 @@ public class DateTimeProviderTests
 
     [Theory]
     [InlineData(0, false)]
-    [InlineData(-6, true)]
+    [InlineData(-11, true)]
     public void TimestampExpiredReturnsCorrectResult(int seconds, bool expected)
     {
         var timestamp = DateTimeOffset.UtcNow.AddSeconds(seconds).ToUnixTimeSeconds();

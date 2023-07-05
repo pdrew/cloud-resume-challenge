@@ -23,7 +23,7 @@ public class DateTimeProvider : IDateTimeProvider
 
     public bool TimestampExpired(long? timestamp)
     {
-        return DateTimeOffset.UtcNow.AddSeconds(-5).ToUnixTimeSeconds() > timestamp;
+        return DateTimeOffset.UtcNow.AddSeconds(-10).ToUnixTimeSeconds() > timestamp;
     }
 
     public DateTimeOffset GetEndOfMonthUtc(DateTimeOffset dateTimeOffset)
