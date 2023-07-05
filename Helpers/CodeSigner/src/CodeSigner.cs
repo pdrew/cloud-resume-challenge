@@ -26,7 +26,9 @@ public class CodeSigner
         {
             case "Create":
             case "Update":
-                var signedObject = await SignLambda(input.ResourceProperties);
+                var signedObject = await SignLambda(
+                    input?.ResourceProperties 
+                    ?? throw new ArgumentNullException(nameof(CustomResourceEvent<SignLambdaRequest>.ResourceProperties)));
                 return new CustomResourceResponse()
                 {
                     Data = new Dictionary<string, object>()
@@ -45,7 +47,9 @@ public class CodeSigner
 
     private async Task<SignedObject> SignLambda(SignLambdaRequest signLambdaRequest)
     {
-        var objectVersion = await GetObjectVersion(signLambdaRequest.BucketName, signLambdaRequest.ObjectKey);
+        var objectVersion = await GetObjectVersion(
+            signLambdaRequest.BucketName ?? throw new ArgumentNullException(nameof(SignLambdaRequest.BucketName)), 
+            signLambdaRequest.ObjectKey ?? throw new ArgumentNullException(nameof(SignLambdaRequest.ObjectKey)));
         
         var request = new StartSigningJobRequest()
         {
