@@ -26,9 +26,9 @@ function SuccessMessage(data) {
     )
 }
 
-export default function Counter({ url, timestamp }) {
-    const { data, error, isLoading } = useSWR(`${url}?timestamp=${timestamp}`, fetcher)
-    
+export default function Counter({ baseUrl, timestamp }) {
+    const { data, error, isLoading } = useSWR(`${baseUrl}/views?timestamp=${timestamp}`, fetcher)
+
     if (error) return ErrorMessage();
     if (isLoading) return LoadingMessage();
 
