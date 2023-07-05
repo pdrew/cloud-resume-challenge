@@ -26,7 +26,7 @@ public class Visitor
     
     
     [DynamoDBProperty("total_views")]
-    public int? TotalViews { get; set; }
+    public int TotalViews { get; set; }
     
     [DynamoDBProperty("ttl")]
     public long? Expiration  { get; private set; }

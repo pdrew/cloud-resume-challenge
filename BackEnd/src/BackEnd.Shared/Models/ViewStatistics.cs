@@ -24,8 +24,8 @@ public class ViewStatistics
     public string? Month { get; private set; }
     
     [DynamoDBProperty("total_views")]
-    public int? TotalViews { get; set; }
+    public int TotalViews { get; set; }
     
     [DynamoDBProperty("unique_visitors")]
-    public int? UniqueVisitors { get; set; }
+    public int UniqueVisitors { get; set; }
 }
